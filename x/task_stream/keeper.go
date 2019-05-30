@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ttype "github.com/marbar3778/simpleM/x/x/task_streamtypes"
+	ttype "github.com/marbar3778/simpleM/x/task_stream/types"
 )
 
 type Keeper struct {

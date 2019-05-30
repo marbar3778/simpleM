@@ -5,7 +5,6 @@ go 1.12
 require (
 	github.com/cosmos/cosmos-sdk v0.34.5
 	github.com/gorilla/mux v1.7.0
-	github.com/marbar3778/simpleM v0.0.0-20190530100408-95d00c28ee7d // indirect
 	github.com/marbar3778/taskStream v0.0.0-20190519080545-0a3a06e973f2
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3

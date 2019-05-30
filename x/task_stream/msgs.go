@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ttype "github.com/marbar3778/simpleM/x/x/task_stream/types"
+	ttype "github.com/marbar3778/simpleM/x/task_stream/types"
 )
 
 const RouterKey = "taskStream"

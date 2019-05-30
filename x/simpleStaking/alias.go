@@ -182,14 +182,14 @@ var (
 	UnmarshalParams                    = types.UnmarshalParams
 	InitialPool                        = types.InitialPool
 	MustUnmarshalPool                  = types.MustUnmarshalPool
-	UnmarshalPool                      = types.UnmarshalPool
-	NewValidator                       = types.NewValidator
-	MustMarshalValidator               = types.MustMarshalValidator
-	MustUnmarshalValidator             = types.MustUnmarshalValidator
-	UnmarshalValidator                 = types.UnmarshalValidator
-	NewDescription                     = types.NewDescription
-
 	// variable aliases
+	UnmarshalPool          = types.UnmarshalPool
+	NewValidator           = types.NewValidator
+	MustMarshalValidator   = types.MustMarshalValidator
+	MustUnmarshalValidator = types.MustUnmarshalValidator
+	UnmarshalValidator     = types.UnmarshalValidator
+	NewDescription         = types.NewDescription
+
 	Addrs                            = keeper.Addrs
 	PKs                              = keeper.PKs
 	ModuleCdc                        = types.ModuleCdc
@@ -239,7 +239,7 @@ type (
 	RedelegationEntryResponse = types.RedelegationEntryResponse
 	RedelegationResponses     = types.RedelegationResponses
 	CodeType                  = types.CodeType
-	DistributionKeeper        = types.DistributionKeeper
+	// DistributionKeeper        = types.DistributionKeeper
 	FeeCollectionKeeper       = types.FeeCollectionKeeper
 	BankKeeper                = types.BankKeeper
 	AccountKeeper             = types.AccountKeeper
