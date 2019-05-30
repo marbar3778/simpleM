@@ -1,9 +1,9 @@
 package cli
 
 import (
+	"flag"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
@@ -17,7 +17,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/marbar3778/simpleM/x/simpleStaking/types"
@@ -116,126 +115,126 @@ func GetCmdEditValidator(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-// GetCmdDelegate implements the delegate command.
-func GetCmdDelegate(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "delegate [validator-addr] [amount]",
-		Args:  cobra.ExactArgs(2),
-		Short: "Delegate liquid tokens to a validator",
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Delegate an amount of liquid coins to a validator from your wallet.
+// // GetCmdDelegate implements the delegate command.
+// func GetCmdDelegate(cdc *codec.Codec) *cobra.Command {
+// 	return &cobra.Command{
+// 		Use:   "delegate [validator-addr] [amount]",
+// 		Args:  cobra.ExactArgs(2),
+// 		Short: "Delegate liquid tokens to a validator",
+// 		Long: strings.TrimSpace(
+// 			fmt.Sprintf(`Delegate an amount of liquid coins to a validator from your wallet.
 
-Example:
-$ %s tx staking delegate cosmosvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 1000stake --from mykey
-`,
-				version.ClientName,
-			),
-		),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(auth.DefaultTxEncoder(cdc))
-			cliCtx := context.NewCLIContext().
-				WithCodec(cdc).
-				WithAccountDecoder(cdc)
+// Example:
+// $ %s tx staking delegate cosmosvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 1000stake --from mykey
+// `,
+// 				version.ClientName,
+// 			),
+// 		),
+// 		RunE: func(cmd *cobra.Command, args []string) error {
+// 			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(auth.DefaultTxEncoder(cdc))
+// 			cliCtx := context.NewCLIContext().
+// 				WithCodec(cdc).
+// 				WithAccountDecoder(cdc)
 
-			amount, err := sdk.ParseCoin(args[1])
-			if err != nil {
-				return err
-			}
+// 			amount, err := sdk.ParseCoin(args[1])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			delAddr := cliCtx.GetFromAddress()
-			valAddr, err := sdk.ValAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
+// 			delAddr := cliCtx.GetFromAddress()
+// 			valAddr, err := sdk.ValAddressFromBech32(args[0])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			msg := types.NewMsgDelegate(delAddr, valAddr, amount)
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
-}
+// 			msg := types.NewMsgDelegate(delAddr, valAddr, amount)
+// 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+// 		},
+// 	}
+// }
 
-// GetCmdRedelegate the begin redelegation command.
-func GetCmdRedelegate(storeName string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "redelegate [src-validator-addr] [dst-validator-addr] [amount]",
-		Short: "Redelegate illiquid tokens from one validator to another",
-		Args:  cobra.ExactArgs(3),
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Redelegate an amount of illiquid staking tokens from one validator to another.
+// // GetCmdRedelegate the begin redelegation command.
+// func GetCmdRedelegate(storeName string, cdc *codec.Codec) *cobra.Command {
+// 	return &cobra.Command{
+// 		Use:   "redelegate [src-validator-addr] [dst-validator-addr] [amount]",
+// 		Short: "Redelegate illiquid tokens from one validator to another",
+// 		Args:  cobra.ExactArgs(3),
+// 		Long: strings.TrimSpace(
+// 			fmt.Sprintf(`Redelegate an amount of illiquid staking tokens from one validator to another.
 
-Example:
-$ %s tx staking redelegate cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj cosmosvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 100stake --from mykey
-`,
-				version.ClientName,
-			),
-		),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(auth.DefaultTxEncoder(cdc))
-			cliCtx := context.NewCLIContext().
-				WithCodec(cdc).
-				WithAccountDecoder(cdc)
+// Example:
+// $ %s tx staking redelegate cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj cosmosvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 100stake --from mykey
+// `,
+// 				version.ClientName,
+// 			),
+// 		),
+// 		RunE: func(cmd *cobra.Command, args []string) error {
+// 			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(auth.DefaultTxEncoder(cdc))
+// 			cliCtx := context.NewCLIContext().
+// 				WithCodec(cdc).
+// 				WithAccountDecoder(cdc)
 
-			delAddr := cliCtx.GetFromAddress()
-			valSrcAddr, err := sdk.ValAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
+// 			delAddr := cliCtx.GetFromAddress()
+// 			valSrcAddr, err := sdk.ValAddressFromBech32(args[0])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			valDstAddr, err := sdk.ValAddressFromBech32(args[1])
-			if err != nil {
-				return err
-			}
+// 			valDstAddr, err := sdk.ValAddressFromBech32(args[1])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			amount, err := sdk.ParseCoin(args[2])
-			if err != nil {
-				return err
-			}
+// 			amount, err := sdk.ParseCoin(args[2])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			msg := types.NewMsgBeginRedelegate(delAddr, valSrcAddr, valDstAddr, amount)
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
-}
+// 			msg := types.NewMsgBeginRedelegate(delAddr, valSrcAddr, valDstAddr, amount)
+// 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+// 		},
+// 	}
+// }
 
-// GetCmdUnbond implements the unbond validator command.
-func GetCmdUnbond(storeName string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "unbond [validator-addr] [amount]",
-		Short: "Unbond shares from a validator",
-		Args:  cobra.ExactArgs(2),
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Unbond an amount of bonded shares from a validator.
+// // GetCmdUnbond implements the unbond validator command.
+// func GetCmdUnbond(storeName string, cdc *codec.Codec) *cobra.Command {
+// 	return &cobra.Command{
+// 		Use:   "unbond [validator-addr] [amount]",
+// 		Short: "Unbond shares from a validator",
+// 		Args:  cobra.ExactArgs(2),
+// 		Long: strings.TrimSpace(
+// 			fmt.Sprintf(`Unbond an amount of bonded shares from a validator.
 
-Example:
-$ %s tx staking unbond cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 100stake --from mykey
-`,
-				version.ClientName,
-			),
-		),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(auth.DefaultTxEncoder(cdc))
-			cliCtx := context.NewCLIContext().
-				WithCodec(cdc).
-				WithAccountDecoder(cdc)
+// Example:
+// $ %s tx staking unbond cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 100stake --from mykey
+// `,
+// 				version.ClientName,
+// 			),
+// 		),
+// 		RunE: func(cmd *cobra.Command, args []string) error {
+// 			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(auth.DefaultTxEncoder(cdc))
+// 			cliCtx := context.NewCLIContext().
+// 				WithCodec(cdc).
+// 				WithAccountDecoder(cdc)
 
-			delAddr := cliCtx.GetFromAddress()
-			valAddr, err := sdk.ValAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
+// 			delAddr := cliCtx.GetFromAddress()
+// 			valAddr, err := sdk.ValAddressFromBech32(args[0])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			amount, err := sdk.ParseCoin(args[1])
-			if err != nil {
-				return err
-			}
+// 			amount, err := sdk.ParseCoin(args[1])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			msg := types.NewMsgUndelegate(delAddr, valAddr, amount)
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
-}
+// 			msg := types.NewMsgUndelegate(delAddr, valAddr, amount)
+// 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+// 		},
+// 	}
+// }
 
-//__________________________________________________________
+// //__________________________________________________________
 
 var (
 	defaultTokens                  = sdk.TokensFromTendermintPower(100)

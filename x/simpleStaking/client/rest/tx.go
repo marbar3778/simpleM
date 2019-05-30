@@ -1,160 +1,142 @@
 package rest
 
-import (
-	"bytes"
-	"net/http"
+import "fmt"
 
-	"github.com/gorilla/mux"
-
-	"github.com/cosmos/cosmos-sdk/client/context"
-	clientrest "github.com/cosmos/cosmos-sdk/client/rest"
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/marbar3778/simpleM/x/simpleStaking"
-)
-
-func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
-	r.HandleFunc(
-		"/staking/delegators/{delegatorAddr}/delegations",
-		postDelegationsHandlerFn(cdc, kb, cliCtx),
-	).Methods("POST")
-	r.HandleFunc(
-		"/staking/delegators/{delegatorAddr}/unbonding_delegations",
-		postUnbondingDelegationsHandlerFn(cdc, kb, cliCtx),
-	).Methods("POST")
-	r.HandleFunc(
-		"/staking/delegators/{delegatorAddr}/redelegations",
-		postRedelegationsHandlerFn(cdc, kb, cliCtx),
-	).Methods("POST")
+func main() {
+	fmt.Print("no Txs here")
 }
 
-type (
-	// DelegateRequest defines the properties of a delegation request's body.
-	DelegateRequest struct {
-		BaseReq          rest.BaseReq   `json:"base_req"`
-		DelegatorAddress sdk.AccAddress `json:"delegator_address"` // in bech32
-		ValidatorAddress sdk.ValAddress `json:"validator_address"` // in bech32
-		Amount           sdk.Coin       `json:"amount"`
-	}
+// func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
+// 	r.HandleFunc("/staking/delegators/{delegatorAddr}/delegations", postDelegationsHandlerFn(cdc, kb, cliCtx)).Methods("POST")
+// 	r.HandleFunc("/staking/delegators/{delegatorAddr}/unbonding_delegations", postUnbondingDelegationsHandlerFn(cdc, kb, cliCtx)).Methods("POST")
+// 	r.HandleFunc("/staking/delegators/{delegatorAddr}/redelegations", postRedelegationsHandlerFn(cdc, kb, cliCtx)).Methods("POST")
+// }
 
-	// RedelegateRequest defines the properties of a redelegate request's body.
-	RedelegateRequest struct {
-		BaseReq             rest.BaseReq   `json:"base_req"`
-		DelegatorAddress    sdk.AccAddress `json:"delegator_address"`     // in bech32
-		ValidatorSrcAddress sdk.ValAddress `json:"validator_src_address"` // in bech32
-		ValidatorDstAddress sdk.ValAddress `json:"validator_dst_address"` // in bech32
-		Amount              sdk.Coin       `json:"amount"`
-	}
+// type (
+// 	// DelegateRequest defines the properties of a delegation request's body.
+// 	DelegateRequest struct {
+// 		BaseReq          rest.BaseReq   `json:"base_req"`
+// 		DelegatorAddress sdk.AccAddress `json:"delegator_address"` // in bech32
+// 		ValidatorAddress sdk.ValAddress `json:"validator_address"` // in bech32
+// 		Amount           sdk.Coin       `json:"amount"`
+// 	}
 
-	// UndelegateRequest defines the properties of a undelegate request's body.
-	UndelegateRequest struct {
-		BaseReq          rest.BaseReq   `json:"base_req"`
-		DelegatorAddress sdk.AccAddress `json:"delegator_address"` // in bech32
-		ValidatorAddress sdk.ValAddress `json:"validator_address"` // in bech32
-		Amount           sdk.Coin       `json:"amount"`
-	}
-)
+// 	// RedelegateRequest defines the properties of a redelegate request's body.
+// 	RedelegateRequest struct {
+// 		BaseReq             rest.BaseReq   `json:"base_req"`
+// 		DelegatorAddress    sdk.AccAddress `json:"delegator_address"`     // in bech32
+// 		ValidatorSrcAddress sdk.ValAddress `json:"validator_src_address"` // in bech32
+// 		ValidatorDstAddress sdk.ValAddress `json:"validator_dst_address"` // in bech32
+// 		Amount              sdk.Coin       `json:"amount"`
+// 	}
 
-func postDelegationsHandlerFn(cdc *codec.Codec, kb keys.Keybase, cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var req DelegateRequest
+// 	// UndelegateRequest defines the properties of a undelegate request's body.
+// 	UndelegateRequest struct {
+// 		BaseReq          rest.BaseReq   `json:"base_req"`
+// 		DelegatorAddress sdk.AccAddress `json:"delegator_address"` // in bech32
+// 		ValidatorAddress sdk.ValAddress `json:"validator_address"` // in bech32
+// 		Amount           sdk.Coin       `json:"amount"`
+// 	}
+// )
 
-		if !rest.ReadRESTReq(w, r, cdc, &req) {
-			return
-		}
+// func postDelegationsHandlerFn(cdc *codec.Codec, kb keys.Keybase, cliCtx context.CLIContext) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		var req DelegateRequest
 
-		req.BaseReq = req.BaseReq.Sanitize()
-		if !req.BaseReq.ValidateBasic(w) {
-			return
-		}
+// 		if !rest.ReadRESTReq(w, r, cdc, &req) {
+// 			return
+// 		}
 
-		msg := staking.NewMsgDelegate(req.DelegatorAddress, req.ValidatorAddress, req.Amount)
-		if err := msg.ValidateBasic(); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+// 		req.BaseReq = req.BaseReq.Sanitize()
+// 		if !req.BaseReq.ValidateBasic(w) {
+// 			return
+// 		}
 
-		fromAddr, err := sdk.AccAddressFromBech32(req.BaseReq.From)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+// 		msg := staking.NewMsgDelegate(req.DelegatorAddress, req.ValidatorAddress, req.Amount)
+// 		if err := msg.ValidateBasic(); err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+// 			return
+// 		}
 
-		if !bytes.Equal(fromAddr, req.DelegatorAddress) {
-			rest.WriteErrorResponse(w, http.StatusUnauthorized, "must use own delegator address")
-			return
-		}
+// 		fromAddr, err := sdk.AccAddressFromBech32(req.BaseReq.From)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+// 			return
+// 		}
 
-		clientrest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []sdk.Msg{msg})
-	}
-}
+// 		if !bytes.Equal(fromAddr, req.DelegatorAddress) {
+// 			rest.WriteErrorResponse(w, http.StatusUnauthorized, "must use own delegator address")
+// 			return
+// 		}
 
-func postRedelegationsHandlerFn(cdc *codec.Codec, kb keys.Keybase, cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var req RedelegateRequest
+// 		clientrest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []sdk.Msg{msg})
+// 	}
+// }
 
-		if !rest.ReadRESTReq(w, r, cdc, &req) {
-			return
-		}
+// func postRedelegationsHandlerFn(cdc *codec.Codec, kb keys.Keybase, cliCtx context.CLIContext) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		var req RedelegateRequest
 
-		req.BaseReq = req.BaseReq.Sanitize()
-		if !req.BaseReq.ValidateBasic(w) {
-			return
-		}
+// 		if !rest.ReadRESTReq(w, r, cdc, &req) {
+// 			return
+// 		}
 
-		msg := staking.NewMsgBeginRedelegate(req.DelegatorAddress, req.ValidatorSrcAddress, req.ValidatorDstAddress, req.Amount)
-		if err := msg.ValidateBasic(); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+// 		req.BaseReq = req.BaseReq.Sanitize()
+// 		if !req.BaseReq.ValidateBasic(w) {
+// 			return
+// 		}
 
-		fromAddr, err := sdk.AccAddressFromBech32(req.BaseReq.From)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+// 		msg := staking.NewMsgBeginRedelegate(req.DelegatorAddress, req.ValidatorSrcAddress, req.ValidatorDstAddress, req.Amount)
+// 		if err := msg.ValidateBasic(); err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+// 			return
+// 		}
 
-		if !bytes.Equal(fromAddr, req.DelegatorAddress) {
-			rest.WriteErrorResponse(w, http.StatusUnauthorized, "must use own delegator address")
-			return
-		}
+// 		fromAddr, err := sdk.AccAddressFromBech32(req.BaseReq.From)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+// 			return
+// 		}
 
-		clientrest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []sdk.Msg{msg})
-	}
-}
+// 		if !bytes.Equal(fromAddr, req.DelegatorAddress) {
+// 			rest.WriteErrorResponse(w, http.StatusUnauthorized, "must use own delegator address")
+// 			return
+// 		}
 
-func postUnbondingDelegationsHandlerFn(cdc *codec.Codec, kb keys.Keybase, cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var req UndelegateRequest
+// 		clientrest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []sdk.Msg{msg})
+// 	}
+// }
 
-		if !rest.ReadRESTReq(w, r, cdc, &req) {
-			return
-		}
+// func postUnbondingDelegationsHandlerFn(cdc *codec.Codec, kb keys.Keybase, cliCtx context.CLIContext) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		var req UndelegateRequest
 
-		req.BaseReq = req.BaseReq.Sanitize()
-		if !req.BaseReq.ValidateBasic(w) {
-			return
-		}
+// 		if !rest.ReadRESTReq(w, r, cdc, &req) {
+// 			return
+// 		}
 
-		msg := staking.NewMsgUndelegate(req.DelegatorAddress, req.ValidatorAddress, req.Amount)
-		if err := msg.ValidateBasic(); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+// 		req.BaseReq = req.BaseReq.Sanitize()
+// 		if !req.BaseReq.ValidateBasic(w) {
+// 			return
+// 		}
 
-		fromAddr, err := sdk.AccAddressFromBech32(req.BaseReq.From)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+// 		msg := staking.NewMsgUndelegate(req.DelegatorAddress, req.ValidatorAddress, req.Amount)
+// 		if err := msg.ValidateBasic(); err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+// 			return
+// 		}
 
-		if !bytes.Equal(fromAddr, req.DelegatorAddress) {
-			rest.WriteErrorResponse(w, http.StatusUnauthorized, "must use own delegator address")
-			return
-		}
+// 		fromAddr, err := sdk.AccAddressFromBech32(req.BaseReq.From)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+// 			return
+// 		}
 
-		clientrest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []sdk.Msg{msg})
-	}
-}
+// 		if !bytes.Equal(fromAddr, req.DelegatorAddress) {
+// 			rest.WriteErrorResponse(w, http.StatusUnauthorized, "must use own delegator address")
+// 			return
+// 		}
+
+// 		clientrest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []sdk.Msg{msg})
+// 	}
+// }
