@@ -13,9 +13,9 @@ import (
 var (
 	_ sdk.Msg = &MsgCreateValidator{}
 	_ sdk.Msg = &MsgEditValidator{}
-	_ sdk.Msg = &MsgDelegate{}
-	_ sdk.Msg = &MsgUndelegate{}
-	_ sdk.Msg = &MsgBeginRedelegate{}
+	// _ sdk.Msg = &MsgDelegate{}
+	// _ sdk.Msg = &MsgUndelegate{}
+	// _ sdk.Msg = &MsgBeginRedelegate{}
 )
 
 //______________________________________________________________________
@@ -208,135 +208,136 @@ func (msg MsgEditValidator) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// MsgDelegate - struct for bonding transactions
-type MsgDelegate struct {
-	DelegatorAddress sdk.AccAddress `json:"delegator_address"`
-	ValidatorAddress sdk.ValAddress `json:"validator_address"`
-	Amount           sdk.Coin       `json:"amount"`
-}
+//______________________________________________________________________
+// // MsgDelegate - struct for bonding transactions
+// type MsgDelegate struct {
+// 	DelegatorAddress sdk.AccAddress `json:"delegator_address"`
+// 	ValidatorAddress sdk.ValAddress `json:"validator_address"`
+// 	Amount           sdk.Coin       `json:"amount"`
+// }
 
-func NewMsgDelegate(delAddr sdk.AccAddress, valAddr sdk.ValAddress, amount sdk.Coin) MsgDelegate {
-	return MsgDelegate{
-		DelegatorAddress: delAddr,
-		ValidatorAddress: valAddr,
-		Amount:           amount,
-	}
-}
+// func NewMsgDelegate(delAddr sdk.AccAddress, valAddr sdk.ValAddress, amount sdk.Coin) MsgDelegate {
+// 	return MsgDelegate{
+// 		DelegatorAddress: delAddr,
+// 		ValidatorAddress: valAddr,
+// 		Amount:           amount,
+// 	}
+// }
 
-//nolint
-func (msg MsgDelegate) Route() string { return RouterKey }
-func (msg MsgDelegate) Type() string  { return "delegate" }
-func (msg MsgDelegate) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.DelegatorAddress}
-}
+// //nolint
+// func (msg MsgDelegate) Route() string { return RouterKey }
+// func (msg MsgDelegate) Type() string  { return "delegate" }
+// func (msg MsgDelegate) GetSigners() []sdk.AccAddress {
+// 	return []sdk.AccAddress{msg.DelegatorAddress}
+// }
 
-// get the bytes for the message signer to sign on
-func (msg MsgDelegate) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
-}
+// // get the bytes for the message signer to sign on
+// func (msg MsgDelegate) GetSignBytes() []byte {
+// 	bz := ModuleCdc.MustMarshalJSON(msg)
+// 	return sdk.MustSortJSON(bz)
+// }
 
-// quick validity check
-func (msg MsgDelegate) ValidateBasic() sdk.Error {
-	if msg.DelegatorAddress.Empty() {
-		return ErrNilDelegatorAddr(DefaultCodespace)
-	}
-	if msg.ValidatorAddress.Empty() {
-		return ErrNilValidatorAddr(DefaultCodespace)
-	}
-	if msg.Amount.Amount.LTE(sdk.ZeroInt()) {
-		return ErrBadDelegationAmount(DefaultCodespace)
-	}
-	return nil
-}
+// // quick validity check
+// func (msg MsgDelegate) ValidateBasic() sdk.Error {
+// 	if msg.DelegatorAddress.Empty() {
+// 		return ErrNilDelegatorAddr(DefaultCodespace)
+// 	}
+// 	if msg.ValidatorAddress.Empty() {
+// 		return ErrNilValidatorAddr(DefaultCodespace)
+// 	}
+// 	if msg.Amount.Amount.LTE(sdk.ZeroInt()) {
+// 		return ErrBadDelegationAmount(DefaultCodespace)
+// 	}
+// 	return nil
+// }
 
 //______________________________________________________________________
 
-// MsgDelegate - struct for bonding transactions
-type MsgBeginRedelegate struct {
-	DelegatorAddress    sdk.AccAddress `json:"delegator_address"`
-	ValidatorSrcAddress sdk.ValAddress `json:"validator_src_address"`
-	ValidatorDstAddress sdk.ValAddress `json:"validator_dst_address"`
-	Amount              sdk.Coin       `json:"amount"`
-}
+// // MsgDelegate - struct for bonding transactions
+// type MsgBeginRedelegate struct {
+// 	DelegatorAddress    sdk.AccAddress `json:"delegator_address"`
+// 	ValidatorSrcAddress sdk.ValAddress `json:"validator_src_address"`
+// 	ValidatorDstAddress sdk.ValAddress `json:"validator_dst_address"`
+// 	Amount              sdk.Coin       `json:"amount"`
+// }
 
-func NewMsgBeginRedelegate(delAddr sdk.AccAddress, valSrcAddr,
-	valDstAddr sdk.ValAddress, amount sdk.Coin) MsgBeginRedelegate {
+// func NewMsgBeginRedelegate(delAddr sdk.AccAddress, valSrcAddr,
+// 	valDstAddr sdk.ValAddress, amount sdk.Coin) MsgBeginRedelegate {
 
-	return MsgBeginRedelegate{
-		DelegatorAddress:    delAddr,
-		ValidatorSrcAddress: valSrcAddr,
-		ValidatorDstAddress: valDstAddr,
-		Amount:              amount,
-	}
-}
+// 	return MsgBeginRedelegate{
+// 		DelegatorAddress:    delAddr,
+// 		ValidatorSrcAddress: valSrcAddr,
+// 		ValidatorDstAddress: valDstAddr,
+// 		Amount:              amount,
+// 	}
+// }
 
-//nolint
-func (msg MsgBeginRedelegate) Route() string { return RouterKey }
-func (msg MsgBeginRedelegate) Type() string  { return "begin_redelegate" }
-func (msg MsgBeginRedelegate) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.DelegatorAddress}
-}
+// //nolint
+// func (msg MsgBeginRedelegate) Route() string { return RouterKey }
+// func (msg MsgBeginRedelegate) Type() string  { return "begin_redelegate" }
+// func (msg MsgBeginRedelegate) GetSigners() []sdk.AccAddress {
+// 	return []sdk.AccAddress{msg.DelegatorAddress}
+// }
 
-// get the bytes for the message signer to sign on
-func (msg MsgBeginRedelegate) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
-}
+// // get the bytes for the message signer to sign on
+// func (msg MsgBeginRedelegate) GetSignBytes() []byte {
+// 	bz := ModuleCdc.MustMarshalJSON(msg)
+// 	return sdk.MustSortJSON(bz)
+// }
 
-// quick validity check
-func (msg MsgBeginRedelegate) ValidateBasic() sdk.Error {
-	if msg.DelegatorAddress.Empty() {
-		return ErrNilDelegatorAddr(DefaultCodespace)
-	}
-	if msg.ValidatorSrcAddress.Empty() {
-		return ErrNilValidatorAddr(DefaultCodespace)
-	}
-	if msg.ValidatorDstAddress.Empty() {
-		return ErrNilValidatorAddr(DefaultCodespace)
-	}
-	if msg.Amount.Amount.LTE(sdk.ZeroInt()) {
-		return ErrBadSharesAmount(DefaultCodespace)
-	}
-	return nil
-}
+// // quick validity check
+// func (msg MsgBeginRedelegate) ValidateBasic() sdk.Error {
+// 	if msg.DelegatorAddress.Empty() {
+// 		return ErrNilDelegatorAddr(DefaultCodespace)
+// 	}
+// 	if msg.ValidatorSrcAddress.Empty() {
+// 		return ErrNilValidatorAddr(DefaultCodespace)
+// 	}
+// 	if msg.ValidatorDstAddress.Empty() {
+// 		return ErrNilValidatorAddr(DefaultCodespace)
+// 	}
+// 	if msg.Amount.Amount.LTE(sdk.ZeroInt()) {
+// 		return ErrBadSharesAmount(DefaultCodespace)
+// 	}
+// 	return nil
+// }
 
-// MsgUndelegate - struct for unbonding transactions
-type MsgUndelegate struct {
-	DelegatorAddress sdk.AccAddress `json:"delegator_address"`
-	ValidatorAddress sdk.ValAddress `json:"validator_address"`
-	Amount           sdk.Coin       `json:"amount"`
-}
+// // MsgUndelegate - struct for unbonding transactions
+// type MsgUndelegate struct {
+// 	DelegatorAddress sdk.AccAddress `json:"delegator_address"`
+// 	ValidatorAddress sdk.ValAddress `json:"validator_address"`
+// 	Amount           sdk.Coin       `json:"amount"`
+// }
 
-func NewMsgUndelegate(delAddr sdk.AccAddress, valAddr sdk.ValAddress, amount sdk.Coin) MsgUndelegate {
-	return MsgUndelegate{
-		DelegatorAddress: delAddr,
-		ValidatorAddress: valAddr,
-		Amount:           amount,
-	}
-}
+// func NewMsgUndelegate(delAddr sdk.AccAddress, valAddr sdk.ValAddress, amount sdk.Coin) MsgUndelegate {
+// 	return MsgUndelegate{
+// 		DelegatorAddress: delAddr,
+// 		ValidatorAddress: valAddr,
+// 		Amount:           amount,
+// 	}
+// }
 
-//nolint
-func (msg MsgUndelegate) Route() string                { return RouterKey }
-func (msg MsgUndelegate) Type() string                 { return "begin_unbonding" }
-func (msg MsgUndelegate) GetSigners() []sdk.AccAddress { return []sdk.AccAddress{msg.DelegatorAddress} }
+// //nolint
+// func (msg MsgUndelegate) Route() string                { return RouterKey }
+// func (msg MsgUndelegate) Type() string                 { return "begin_unbonding" }
+// func (msg MsgUndelegate) GetSigners() []sdk.AccAddress { return []sdk.AccAddress{msg.DelegatorAddress} }
 
-// get the bytes for the message signer to sign on
-func (msg MsgUndelegate) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
-}
+// // get the bytes for the message signer to sign on
+// func (msg MsgUndelegate) GetSignBytes() []byte {
+// 	bz := ModuleCdc.MustMarshalJSON(msg)
+// 	return sdk.MustSortJSON(bz)
+// }
 
-// quick validity check
-func (msg MsgUndelegate) ValidateBasic() sdk.Error {
-	if msg.DelegatorAddress.Empty() {
-		return ErrNilDelegatorAddr(DefaultCodespace)
-	}
-	if msg.ValidatorAddress.Empty() {
-		return ErrNilValidatorAddr(DefaultCodespace)
-	}
-	if msg.Amount.Amount.LTE(sdk.ZeroInt()) {
-		return ErrBadSharesAmount(DefaultCodespace)
-	}
-	return nil
-}
+// // quick validity check
+// func (msg MsgUndelegate) ValidateBasic() sdk.Error {
+// 	if msg.DelegatorAddress.Empty() {
+// 		return ErrNilDelegatorAddr(DefaultCodespace)
+// 	}
+// 	if msg.ValidatorAddress.Empty() {
+// 		return ErrNilValidatorAddr(DefaultCodespace)
+// 	}
+// 	if msg.Amount.Amount.LTE(sdk.ZeroInt()) {
+// 		return ErrBadSharesAmount(DefaultCodespace)
+// 	}
+// 	return nil
+// }

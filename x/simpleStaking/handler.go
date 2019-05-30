@@ -2,7 +2,6 @@ package staking
 
 import (
 	"fmt"
-	"time"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/common"
@@ -24,14 +23,14 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case types.MsgEditValidator:
 			return handleMsgEditValidator(ctx, msg, k)
 
-		case types.MsgDelegate:
-			return handleMsgDelegate(ctx, msg, k)
+		// case types.MsgDelegate:
+		// 	return handleMsgDelegate(ctx, msg, k)
 
-		case types.MsgBeginRedelegate:
-			return handleMsgBeginRedelegate(ctx, msg, k)
+		// case types.MsgBeginRedelegate:
+		// 	return handleMsgBeginRedelegate(ctx, msg, k)
 
-		case types.MsgUndelegate:
-			return handleMsgUndelegate(ctx, msg, k)
+		// case types.MsgUndelegate:
+		// 	return handleMsgUndelegate(ctx, msg, k)
 
 		default:
 			errMsg := fmt.Sprintf("unrecognized staking message type: %T", msg)
@@ -210,79 +209,79 @@ func handleMsgEditValidator(ctx sdk.Context, msg types.MsgEditValidator, k keepe
 	}
 }
 
-func handleMsgDelegate(ctx sdk.Context, msg types.MsgDelegate, k keeper.Keeper) sdk.Result {
-	validator, found := k.GetValidator(ctx, msg.ValidatorAddress)
-	if !found {
-		return ErrNoValidatorFound(k.Codespace()).Result()
-	}
+// func handleMsgDelegate(ctx sdk.Context, msg types.MsgDelegate, k keeper.Keeper) sdk.Result {
+// 	validator, found := k.GetValidator(ctx, msg.ValidatorAddress)
+// 	if !found {
+// 		return ErrNoValidatorFound(k.Codespace()).Result()
+// 	}
 
-	if msg.Amount.Denom != k.GetParams(ctx).BondDenom {
-		return ErrBadDenom(k.Codespace()).Result()
-	}
+// 	if msg.Amount.Denom != k.GetParams(ctx).BondDenom {
+// 		return ErrBadDenom(k.Codespace()).Result()
+// 	}
 
-	_, err := k.Delegate(ctx, msg.DelegatorAddress, msg.Amount.Amount, validator, true)
-	if err != nil {
-		return err.Result()
-	}
+// 	_, err := k.Delegate(ctx, msg.DelegatorAddress, msg.Amount.Amount, validator, true)
+// 	if err != nil {
+// 		return err.Result()
+// 	}
 
-	resTags := sdk.NewTags(
-		tags.Category, tags.TxCategory,
-		tags.Sender, msg.DelegatorAddress.String(),
-		tags.DstValidator, msg.ValidatorAddress.String(),
-	)
+// 	resTags := sdk.NewTags(
+// 		tags.Category, tags.TxCategory,
+// 		tags.Sender, msg.DelegatorAddress.String(),
+// 		tags.DstValidator, msg.ValidatorAddress.String(),
+// 	)
 
-	return sdk.Result{
-		Tags: resTags,
-	}
-}
+// 	return sdk.Result{
+// 		Tags: resTags,
+// 	}
+// }
 
-func handleMsgUndelegate(ctx sdk.Context, msg types.MsgUndelegate, k keeper.Keeper) sdk.Result {
-	shares, err := k.ValidateUnbondAmount(
-		ctx, msg.DelegatorAddress, msg.ValidatorAddress, msg.Amount.Amount,
-	)
-	if err != nil {
-		return err.Result()
-	}
+// func handleMsgUndelegate(ctx sdk.Context, msg types.MsgUndelegate, k keeper.Keeper) sdk.Result {
+// 	shares, err := k.ValidateUnbondAmount(
+// 		ctx, msg.DelegatorAddress, msg.ValidatorAddress, msg.Amount.Amount,
+// 	)
+// 	if err != nil {
+// 		return err.Result()
+// 	}
 
-	completionTime, err := k.Undelegate(ctx, msg.DelegatorAddress, msg.ValidatorAddress, shares)
-	if err != nil {
-		return err.Result()
-	}
+// 	completionTime, err := k.Undelegate(ctx, msg.DelegatorAddress, msg.ValidatorAddress, shares)
+// 	if err != nil {
+// 		return err.Result()
+// 	}
 
-	finishTime := types.ModuleCdc.MustMarshalBinaryLengthPrefixed(completionTime)
-	resTags := sdk.NewTags(
-		tags.Category, tags.TxCategory,
-		tags.Sender, msg.DelegatorAddress.String(),
-		tags.SrcValidator, msg.ValidatorAddress.String(),
-		tags.EndTime, completionTime.Format(time.RFC3339),
-	)
+// 	finishTime := types.ModuleCdc.MustMarshalBinaryLengthPrefixed(completionTime)
+// 	resTags := sdk.NewTags(
+// 		tags.Category, tags.TxCategory,
+// 		tags.Sender, msg.DelegatorAddress.String(),
+// 		tags.SrcValidator, msg.ValidatorAddress.String(),
+// 		tags.EndTime, completionTime.Format(time.RFC3339),
+// 	)
 
-	return sdk.Result{Data: finishTime, Tags: resTags}
-}
+// 	return sdk.Result{Data: finishTime, Tags: resTags}
+// }
 
-func handleMsgBeginRedelegate(ctx sdk.Context, msg types.MsgBeginRedelegate, k keeper.Keeper) sdk.Result {
-	shares, err := k.ValidateUnbondAmount(
-		ctx, msg.DelegatorAddress, msg.ValidatorSrcAddress, msg.Amount.Amount,
-	)
-	if err != nil {
-		return err.Result()
-	}
+// func handleMsgBeginRedelegate(ctx sdk.Context, msg types.MsgBeginRedelegate, k keeper.Keeper) sdk.Result {
+// 	shares, err := k.ValidateUnbondAmount(
+// 		ctx, msg.DelegatorAddress, msg.ValidatorSrcAddress, msg.Amount.Amount,
+// 	)
+// 	if err != nil {
+// 		return err.Result()
+// 	}
 
-	completionTime, err := k.BeginRedelegation(
-		ctx, msg.DelegatorAddress, msg.ValidatorSrcAddress, msg.ValidatorDstAddress, shares,
-	)
-	if err != nil {
-		return err.Result()
-	}
+// 	completionTime, err := k.BeginRedelegation(
+// 		ctx, msg.DelegatorAddress, msg.ValidatorSrcAddress, msg.ValidatorDstAddress, shares,
+// 	)
+// 	if err != nil {
+// 		return err.Result()
+// 	}
 
-	finishTime := types.ModuleCdc.MustMarshalBinaryLengthPrefixed(completionTime)
-	resTags := sdk.NewTags(
-		tags.Category, tags.TxCategory,
-		tags.Sender, msg.DelegatorAddress.String(),
-		tags.SrcValidator, msg.ValidatorSrcAddress.String(),
-		tags.DstValidator, msg.ValidatorDstAddress.String(),
-		tags.EndTime, completionTime.Format(time.RFC3339),
-	)
+// 	finishTime := types.ModuleCdc.MustMarshalBinaryLengthPrefixed(completionTime)
+// 	resTags := sdk.NewTags(
+// 		tags.Category, tags.TxCategory,
+// 		tags.Sender, msg.DelegatorAddress.String(),
+// 		tags.SrcValidator, msg.ValidatorSrcAddress.String(),
+// 		tags.DstValidator, msg.ValidatorDstAddress.String(),
+// 		tags.EndTime, completionTime.Format(time.RFC3339),
+// 	)
 
-	return sdk.Result{Data: finishTime, Tags: resTags}
-}
+// 	return sdk.Result{Data: finishTime, Tags: resTags}
+// }
