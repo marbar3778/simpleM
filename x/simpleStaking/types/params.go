@@ -14,7 +14,7 @@ const (
 	// DefaultUnbondingTime reflects three weeks in seconds as the default
 	// unbonding time.
 	// TODO: Justify our choice of default here.
-	DefaultUnbondingTime time.Duration = time.Second * 60 * 60 * 24 * 3
+	// DefaultUnbondingTime time.Duration = time.Second * 60 * 60 * 24 * 3
 
 	// Default maximum number of bonded validators
 	DefaultMaxValidators uint16 = 100
@@ -42,11 +42,10 @@ type Params struct {
 	BondDenom string `json:"bond_denom"` // bondable coin denomination
 }
 
-func NewParams(unbondingTime time.Duration, maxValidators, maxEntries uint16,
-	bondDenom string) Params {
+func NewParams(maxValidators, maxEntries uint16, bondDenom string) Params {
 
 	return Params{
-		UnbondingTime: unbondingTime,
+		// UnbondingTime: unbondingTime,
 		MaxValidators: maxValidators,
 		MaxEntries:    maxEntries,
 		BondDenom:     bondDenom,
@@ -73,7 +72,7 @@ func (p Params) Equal(p2 Params) bool {
 
 // DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
-	return NewParams(DefaultUnbondingTime, DefaultMaxValidators, DefaultMaxEntries, sdk.DefaultBondDenom)
+	return NewParams(DefaultMaxValidators, DefaultMaxEntries, sdk.DefaultBondDenom)
 }
 
 // String returns a human readable string representation of the parameters.

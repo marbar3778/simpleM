@@ -58,37 +58,37 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) ([]abci.ValidatorUpdate, sdk.T
 	k.UnbondAllMatureValidatorQueue(ctx)
 
 	// Remove all mature unbonding delegations from the ubd queue.
-	matureUnbonds := k.DequeueAllMatureUBDQueue(ctx, ctx.BlockHeader().Time)
-	for _, dvPair := range matureUnbonds {
-		err := k.CompleteUnbonding(ctx, dvPair.DelegatorAddress, dvPair.ValidatorAddress)
-		if err != nil {
-			continue
-		}
+	// matureUnbonds := k.DequeueAllMatureUBDQueue(ctx, ctx.BlockHeader().Time)
+	// for _, dvPair := range matureUnbonds {
+	// 	err := k.CompleteUnbonding(ctx, dvPair.DelegatorAddress, dvPair.ValidatorAddress)
+	// 	if err != nil {
+	// 		continue
+	// 	}
 
-		resTags = resTags.AppendTags(sdk.NewTags(
-			tags.Action, tags.ActionCompleteUnbonding,
-			tags.Delegator, dvPair.DelegatorAddress.String(),
-			tags.SrcValidator, dvPair.ValidatorAddress.String(),
-		))
-	}
+	// 	resTags = resTags.AppendTags(sdk.NewTags(
+	// 		tags.Action, tags.ActionCompleteUnbonding,
+	// 		tags.Delegator, dvPair.DelegatorAddress.String(),
+	// 		tags.SrcValidator, dvPair.ValidatorAddress.String(),
+	// 	))
+	// }
 
 	// Remove all mature redelegations from the red queue.
-	matureRedelegations := k.DequeueAllMatureRedelegationQueue(ctx, ctx.BlockHeader().Time)
-	for _, dvvTriplet := range matureRedelegations {
-		err := k.CompleteRedelegation(ctx, dvvTriplet.DelegatorAddress,
-			dvvTriplet.ValidatorSrcAddress, dvvTriplet.ValidatorDstAddress)
-		if err != nil {
-			continue
-		}
+	// matureRedelegations := k.DequeueAllMatureRedelegationQueue(ctx, ctx.BlockHeader().Time)
+	// for _, dvvTriplet := range matureRedelegations {
+	// 	err := k.CompleteRedelegation(ctx, dvvTriplet.DelegatorAddress,
+	// 		dvvTriplet.ValidatorSrcAddress, dvvTriplet.ValidatorDstAddress)
+	// 	if err != nil {
+	// 		continue
+	// 	}
 
-		resTags = resTags.AppendTags(sdk.NewTags(
-			tags.Action, tags.ActionCompleteRedelegation,
-			tags.Category, tags.TxCategory,
-			tags.Delegator, dvvTriplet.DelegatorAddress.String(),
-			tags.SrcValidator, dvvTriplet.ValidatorSrcAddress.String(),
-			tags.DstValidator, dvvTriplet.ValidatorDstAddress.String(),
-		))
-	}
+	// 	resTags = resTags.AppendTags(sdk.NewTags(
+	// 		tags.Action, tags.ActionCompleteRedelegation,
+	// 		tags.Category, tags.TxCategory,
+	// 		tags.Delegator, dvvTriplet.DelegatorAddress.String(),
+	// 		tags.SrcValidator, dvvTriplet.ValidatorSrcAddress.String(),
+	// 		tags.DstValidator, dvvTriplet.ValidatorDstAddress.String(),
+	// 	))
+	// }
 
 	return validatorUpdates, resTags
 }

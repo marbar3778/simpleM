@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"time"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/marbar3778/simpleM/x/simpleStaking/types"
 )
@@ -543,33 +541,33 @@ func (k Keeper) Delegate(ctx sdk.Context, delAddr sdk.AccAddress, bondAmt sdk.In
 // 	return amount, nil
 // }
 
-// get info for begin functions: completionTime and CreationHeight
-func (k Keeper) getBeginInfo(ctx sdk.Context, valSrcAddr sdk.ValAddress) (
-	completionTime time.Time, height int64, completeNow bool) {
+// // get info for begin functions: completionTime and CreationHeight
+// func (k Keeper) getBeginInfo(ctx sdk.Context, valSrcAddr sdk.ValAddress) (
+// 	completionTime time.Time, height int64, completeNow bool) {
 
-	validator, found := k.GetValidator(ctx, valSrcAddr)
+// 	validator, found := k.GetValidator(ctx, valSrcAddr)
 
-	switch {
-	// TODO: when would the validator not be found?
-	case !found || validator.Status == sdk.Bonded:
+// 	switch {
+// 	// TODO: when would the validator not be found?
+// 	case !found || validator.Status == sdk.Bonded:
 
-		// the longest wait - just unbonding period from now
-		completionTime = ctx.BlockHeader().Time.Add(k.UnbondingTime(ctx))
-		height = ctx.BlockHeight()
-		return completionTime, height, false
+// 		// the longest wait - just unbonding period from now
+// 		completionTime = ctx.BlockHeader().Time.Add(k.UnbondingTime(ctx))
+// 		height = ctx.BlockHeight()
+// 		return completionTime, height, false
 
-	case validator.Status == sdk.Unbonded:
-		return completionTime, height, true
+// 	case validator.Status == sdk.Unbonded:
+// 		return completionTime, height, true
 
-	case validator.Status == sdk.Unbonding:
-		completionTime = validator.UnbondingCompletionTime
-		height = validator.UnbondingHeight
-		return completionTime, height, false
+// 	case validator.Status == sdk.Unbonding:
+// 		completionTime = validator.UnbondingCompletionTime
+// 		height = validator.UnbondingHeight
+// 		return completionTime, height, false
 
-	default:
-		panic("unknown validator status")
-	}
-}
+// 	default:
+// 		panic("unknown validator status")
+// 	}
+// }
 
 // // begin unbonding part or all of a delegation
 // func (k Keeper) Undelegate(ctx sdk.Context, delAddr sdk.AccAddress,

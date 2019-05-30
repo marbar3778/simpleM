@@ -50,7 +50,7 @@ func NewTestMsgCreateValidatorWithMinSelfDelegation(address sdk.ValAddress, pubK
 	)
 }
 
-func NewTestMsgDelegate(delAddr sdk.AccAddress, valAddr sdk.ValAddress, amt sdk.Int) MsgDelegate {
-	amount := sdk.NewCoin(sdk.DefaultBondDenom, amt)
-	return NewMsgDelegate(delAddr, valAddr, amount)
-}
+// func NewTestMsgDelegate(delAddr sdk.AccAddress, valAddr sdk.ValAddress, amt sdk.Int) MsgDelegate {
+// 	amount := sdk.NewCoin(sdk.DefaultBondDenom, amt)
+// 	return NewMsgDelegate(delAddr, valAddr, amount)
+// }

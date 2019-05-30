@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"time"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/marbar3778/simpleM/x/simpleStaking/types"
@@ -18,11 +16,11 @@ func ParamKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&types.Params{})
 }
 
-// UnbondingTime
-func (k Keeper) UnbondingTime(ctx sdk.Context) (res time.Duration) {
-	k.paramstore.Get(ctx, types.KeyUnbondingTime, &res)
-	return
-}
+// // UnbondingTime
+// func (k Keeper) UnbondingTime(ctx sdk.Context) (res time.Duration) {
+// 	k.paramstore.Get(ctx, types.KeyUnbondingTime, &res)
+// 	return
+// }
 
 // MaxValidators - Maximum number of validators
 func (k Keeper) MaxValidators(ctx sdk.Context) (res uint16) {
@@ -46,7 +44,7 @@ func (k Keeper) BondDenom(ctx sdk.Context) (res string) {
 // Get all parameteras as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
-		k.UnbondingTime(ctx),
+		// k.UnbondingTime(ctx),
 		k.MaxValidators(ctx),
 		k.MaxEntries(ctx),
 		k.BondDenom(ctx),

@@ -58,31 +58,31 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, accountKeeper types.AccountKeep
 		}
 	}
 
-	for _, delegation := range data.Delegations {
-		// Call the before-creation hook if not exported
-		if !data.Exported {
-			keeper.BeforeDelegationCreated(ctx, delegation.DelegatorAddress, delegation.ValidatorAddress)
-		}
-		keeper.SetDelegation(ctx, delegation)
-		// Call the after-modification hook if not exported
-		if !data.Exported {
-			keeper.AfterDelegationModified(ctx, delegation.DelegatorAddress, delegation.ValidatorAddress)
-		}
-	}
+	// for _, delegation := range data.Delegations {
+	// 	// Call the before-creation hook if not exported
+	// 	if !data.Exported {
+	// 		keeper.BeforeDelegationCreated(ctx, delegation.DelegatorAddress, delegation.ValidatorAddress)
+	// 	}
+	// 	keeper.SetDelegation(ctx, delegation)
+	// 	// Call the after-modification hook if not exported
+	// 	if !data.Exported {
+	// 		keeper.AfterDelegationModified(ctx, delegation.DelegatorAddress, delegation.ValidatorAddress)
+	// 	}
+	// }
 
-	for _, ubd := range data.UnbondingDelegations {
-		keeper.SetUnbondingDelegation(ctx, ubd)
-		for _, entry := range ubd.Entries {
-			keeper.InsertUBDQueue(ctx, ubd, entry.CompletionTime)
-		}
-	}
+	// for _, ubd := range data.UnbondingDelegations {
+	// 	keeper.SetUnbondingDelegation(ctx, ubd)
+	// 	for _, entry := range ubd.Entries {
+	// 		keeper.InsertUBDQueue(ctx, ubd, entry.CompletionTime)
+	// 	}
+	// }
 
-	for _, red := range data.Redelegations {
-		keeper.SetRedelegation(ctx, red)
-		for _, entry := range red.Entries {
-			keeper.InsertRedelegationQueue(ctx, red, entry.CompletionTime)
-		}
-	}
+	// for _, red := range data.Redelegations {
+	// 	keeper.SetRedelegation(ctx, red)
+	// 	for _, entry := range red.Entries {
+	// 		keeper.InsertRedelegationQueue(ctx, red, entry.CompletionTime)
+	// 	}
+	// }
 
 	// don't need to run Tendermint updates if we exported
 	if data.Exported {
@@ -111,17 +111,17 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 	params := keeper.GetParams(ctx)
 	lastTotalPower := keeper.GetLastTotalPower(ctx)
 	validators := keeper.GetAllValidators(ctx)
-	delegations := keeper.GetAllDelegations(ctx)
-	var unbondingDelegations []types.UnbondingDelegation
-	keeper.IterateUnbondingDelegations(ctx, func(_ int64, ubd types.UnbondingDelegation) (stop bool) {
-		unbondingDelegations = append(unbondingDelegations, ubd)
-		return false
-	})
-	var redelegations []types.Redelegation
-	keeper.IterateRedelegations(ctx, func(_ int64, red types.Redelegation) (stop bool) {
-		redelegations = append(redelegations, red)
-		return false
-	})
+	// delegations := keeper.GetAllDelegations(ctx)
+	// var unbondingDelegations []types.UnbondingDelegation
+	// keeper.IterateUnbondingDelegations(ctx, func(_ int64, ubd types.UnbondingDelegation) (stop bool) {
+	// 	unbondingDelegations = append(unbondingDelegations, ubd)
+	// 	return false
+	// })
+	// var redelegations []types.Redelegation
+	// keeper.IterateRedelegations(ctx, func(_ int64, red types.Redelegation) (stop bool) {
+	// 	redelegations = append(redelegations, red)
+	// 	return false
+	// })
 	var lastValidatorPowers []types.LastValidatorPower
 	keeper.IterateLastValidatorPowers(ctx, func(addr sdk.ValAddress, power int64) (stop bool) {
 		lastValidatorPowers = append(lastValidatorPowers, types.LastValidatorPower{addr, power})
@@ -129,15 +129,15 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 	})
 
 	return types.GenesisState{
-		Pool:                 pool,
-		Params:               params,
-		LastTotalPower:       lastTotalPower,
-		LastValidatorPowers:  lastValidatorPowers,
-		Validators:           validators,
-		Delegations:          delegations,
-		UnbondingDelegations: unbondingDelegations,
-		Redelegations:        redelegations,
-		Exported:             true,
+		Pool:                pool,
+		Params:              params,
+		LastTotalPower:      lastTotalPower,
+		LastValidatorPowers: lastValidatorPowers,
+		Validators:          validators,
+		// Delegations:          delegations,
+		// UnbondingDelegations: unbondingDelegations,
+		// Redelegations:        redelegations,
+		Exported: true,
 	}
 }
 

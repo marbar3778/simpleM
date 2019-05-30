@@ -42,24 +42,24 @@ const (
 	TStoreKey                          = types.TStoreKey
 	QuerierRoute                       = types.QuerierRoute
 	RouterKey                          = types.RouterKey
-	DefaultUnbondingTime               = types.DefaultUnbondingTime
-	DefaultMaxValidators               = types.DefaultMaxValidators
-	DefaultMaxEntries                  = types.DefaultMaxEntries
-	MaxMonikerLength                   = types.MaxMonikerLength
-	MaxIdentityLength                  = types.MaxIdentityLength
-	MaxWebsiteLength                   = types.MaxWebsiteLength
-	MaxDetailsLength                   = types.MaxDetailsLength
-	DoNotModifyDesc                    = types.DoNotModifyDesc
+	// DefaultUnbondingTime               = types.DefaultUnbondingTime
+	DefaultMaxValidators = types.DefaultMaxValidators
+	DefaultMaxEntries    = types.DefaultMaxEntries
+	MaxMonikerLength     = types.MaxMonikerLength
+	MaxIdentityLength    = types.MaxIdentityLength
+	MaxWebsiteLength     = types.MaxWebsiteLength
+	MaxDetailsLength     = types.MaxDetailsLength
+	DoNotModifyDesc      = types.DoNotModifyDesc
 )
 
 var (
 	// functions aliases
-	RegisterInvariants                 = keeper.RegisterInvariants
-	AllInvariants                      = keeper.AllInvariants
-	SupplyInvariants                   = keeper.SupplyInvariants
-	NonNegativePowerInvariant          = keeper.NonNegativePowerInvariant
-	PositiveDelegationInvariant        = keeper.PositiveDelegationInvariant
-	DelegatorSharesInvariant           = keeper.DelegatorSharesInvariant
+	RegisterInvariants        = keeper.RegisterInvariants
+	AllInvariants             = keeper.AllInvariants
+	SupplyInvariants          = keeper.SupplyInvariants
+	NonNegativePowerInvariant = keeper.NonNegativePowerInvariant
+	// PositiveDelegationInvariant        = keeper.PositiveDelegationInvariant
+	// DelegatorSharesInvariant           = keeper.DelegatorSharesInvariant
 	NewKeeper                          = keeper.NewKeeper
 	ParamKeyTable                      = keeper.ParamKeyTable
 	ValEq                              = keeper.ValEq
@@ -173,15 +173,15 @@ var (
 	GetREDsByDelToValDstIndexKey       = types.GetREDsByDelToValDstIndexKey
 	NewMsgCreateValidator              = types.NewMsgCreateValidator
 	NewMsgEditValidator                = types.NewMsgEditValidator
-	NewMsgDelegate                     = types.NewMsgDelegate
-	NewMsgBeginRedelegate              = types.NewMsgBeginRedelegate
-	NewMsgUndelegate                   = types.NewMsgUndelegate
-	NewParams                          = types.NewParams
-	DefaultParams                      = types.DefaultParams
-	MustUnmarshalParams                = types.MustUnmarshalParams
-	UnmarshalParams                    = types.UnmarshalParams
-	InitialPool                        = types.InitialPool
-	MustUnmarshalPool                  = types.MustUnmarshalPool
+	// NewMsgDelegate                     = types.NewMsgDelegate
+	// NewMsgBeginRedelegate              = types.NewMsgBeginRedelegate
+	// NewMsgUndelegate                   = types.NewMsgUndelegate
+	NewParams           = types.NewParams
+	DefaultParams       = types.DefaultParams
+	MustUnmarshalParams = types.MustUnmarshalParams
+	UnmarshalParams     = types.UnmarshalParams
+	InitialPool         = types.InitialPool
+	MustUnmarshalPool   = types.MustUnmarshalPool
 	// variable aliases
 	UnmarshalPool          = types.UnmarshalPool
 	NewValidator           = types.NewValidator
@@ -248,12 +248,12 @@ type (
 	MultiStakingHooks   = types.MultiStakingHooks
 	MsgCreateValidator  = types.MsgCreateValidator
 	MsgEditValidator    = types.MsgEditValidator
-	MsgDelegate         = types.MsgDelegate
-	MsgBeginRedelegate  = types.MsgBeginRedelegate
-	MsgUndelegate       = types.MsgUndelegate
-	Params              = types.Params
-	Pool                = types.Pool
-	Validator           = types.Validator
-	Validators          = types.Validators
-	Description         = types.Description
+	// MsgDelegate         = types.MsgDelegate
+	// MsgBeginRedelegate  = types.MsgBeginRedelegate
+	// MsgUndelegate       = types.MsgUndelegate
+	Params      = types.Params
+	Pool        = types.Pool
+	Validator   = types.Validator
+	Validators  = types.Validators
+	Description = types.Description
 )
