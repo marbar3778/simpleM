@@ -23,8 +23,6 @@ import (
 	sstakeclient "github.com/marbar3778/simpleM/x/simpleStaking/client"
 	sstake "github.com/marbar3778/simpleM/x/simpleStaking/client/rest"
 	app "github.com/cosmos/sdk-application-tutorial/app"
-	nsclient "github.com/cosmos/sdk-application-tutorial/x/nameservice/client"
-	nsrest "github.com/cosmos/sdk-application-tutorial/x/nameservice/client/rest"
 )
 
 const (
@@ -45,7 +43,6 @@ func main() {
 	config.Seal()
 
 	mc := []sdk.ModuleClient{
-		nsclient.NewModuleClient(storeNS, cdc),
 		sstakeclient.NewModuleClient(sst.StoreKey, cdc),
 	}
 
@@ -86,7 +83,6 @@ func registerRoutes(rs *lcd.RestServer) {
 	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeAcc)
 	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	nsrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeNS)
 	sstake.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 }
 
