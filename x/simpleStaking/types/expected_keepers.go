@@ -5,12 +5,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 )
 
-// expected coin keeper
-// type DistributionKeeper interface {
-// 	GetFeePoolCommunityCoins(ctx sdk.Context) sdk.DecCoins
-// 	GetValidatorOutstandingRewardsCoins(ctx sdk.Context, val sdk.ValAddress) sdk.DecCoins
-// }
-
 // expected fee collection keeper
 type FeeCollectionKeeper interface {
 	GetCollectedFees(ctx sdk.Context) sdk.Coins

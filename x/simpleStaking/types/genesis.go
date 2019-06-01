@@ -11,10 +11,7 @@ type GenesisState struct {
 	LastTotalPower      sdk.Int              `json:"last_total_power"`
 	LastValidatorPowers []LastValidatorPower `json:"last_validator_powers"`
 	Validators          Validators           `json:"validators"`
-	// Delegations          Delegations           `json:"delegations"`
-	// UnbondingDelegations []UnbondingDelegation `json:"unbonding_delegations"`
-	// Redelegations        []Redelegation        `json:"redelegations"`
-	Exported bool `json:"exported"`
+	Exported            bool                 `json:"exported"`
 }
 
 // Last validator power, needed for validator set update logic
@@ -28,7 +25,6 @@ func NewGenesisState(pool Pool, params Params, validators []Validator, delegatio
 		Pool:       pool,
 		Params:     params,
 		Validators: validators,
-		// Delegations: delegations,
 	}
 }
 

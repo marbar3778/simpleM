@@ -4,20 +4,20 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/marbar3778/simpleM/x/simpleStaking/types"
+	ptypes "github.com/marbar3778/simpleM/x/simpleStaking/types"
 )
 
 // Implements ValidatorSet
-var _ sdk.ValidatorSet = Keeper{}
+// var _ sdk.ValidatorSet = Keeper{}
 
 // iterate through the validator set and perform the provided function
-func (k Keeper) IterateValidators(ctx sdk.Context, fn func(index int64, validator sdk.Validator) (stop bool)) {
+func (k Keeper) IterateValidators(ctx sdk.Context, fn func(index int64, validator ptypes.Validator) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.ValidatorsKey)
+	iterator := sdk.KVStorePrefixIterator(store, ptypes.ValidatorsKey)
 	defer iterator.Close()
 	i := int64(0)
 	for ; iterator.Valid(); iterator.Next() {
-		validator := types.MustUnmarshalValidator(k.cdc, iterator.Value())
+		validator := ptypes.MustUnmarshalValidator(k.cdc, iterator.Value())
 		stop := fn(i, validator) // XXX is this safe will the validator unexposed fields be able to get written to?
 		if stop {
 			break
@@ -27,11 +27,11 @@ func (k Keeper) IterateValidators(ctx sdk.Context, fn func(index int64, validato
 }
 
 // iterate through the bonded validator set and perform the provided function
-func (k Keeper) IterateBondedValidatorsByPower(ctx sdk.Context, fn func(index int64, validator sdk.Validator) (stop bool)) {
+func (k Keeper) IterateBondedValidatorsByPower(ctx sdk.Context, fn func(index int64, validator ptypes.Validator) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	maxValidators := k.MaxValidators(ctx)
 
-	iterator := sdk.KVStoreReversePrefixIterator(store, types.ValidatorsByPowerIndexKey)
+	iterator := sdk.KVStoreReversePrefixIterator(store, ptypes.ValidatorsByPowerIndexKey)
 	defer iterator.Close()
 
 	i := int64(0)
@@ -50,12 +50,12 @@ func (k Keeper) IterateBondedValidatorsByPower(ctx sdk.Context, fn func(index in
 }
 
 // iterate through the active validator set and perform the provided function
-func (k Keeper) IterateLastValidators(ctx sdk.Context, fn func(index int64, validator sdk.Validator) (stop bool)) {
+func (k Keeper) IterateLastValidators(ctx sdk.Context, fn func(index int64, validator ptypes.Validator) (stop bool)) {
 	iterator := k.LastValidatorsIterator(ctx)
 	defer iterator.Close()
 	i := int64(0)
 	for ; iterator.Valid(); iterator.Next() {
-		address := types.AddressFromLastValidatorPowerKey(iterator.Key())
+		address := ptypes.AddressFromLastValidatorPowerKey(iterator.Key())
 		validator, found := k.GetValidator(ctx, address)
 		if !found {
 			panic(fmt.Sprintf("validator record not found for address: %v\n", address))
@@ -70,16 +70,16 @@ func (k Keeper) IterateLastValidators(ctx sdk.Context, fn func(index int64, vali
 }
 
 // get the sdk.validator for a particular address
-func (k Keeper) Validator(ctx sdk.Context, address sdk.ValAddress) sdk.Validator {
+func (k Keeper) Validator(ctx sdk.Context, address sdk.ValAddress) ptypes.Validator {
 	val, found := k.GetValidator(ctx, address)
 	if !found {
-		return nil
+		return
 	}
 	return val
 }
 
 // get the sdk.validator for a particular pubkey
-func (k Keeper) ValidatorByConsAddr(ctx sdk.Context, addr sdk.ConsAddress) sdk.Validator {
+func (k Keeper) ValidatorByConsAddr(ctx sdk.Context, addr sdk.ConsAddress) ptypes.Validator {
 	val, found := k.GetValidatorByConsAddr(ctx, addr)
 	if !found {
 		return nil

@@ -76,9 +76,8 @@ func (AppModuleBasic) BuildCreateValidatorMsg(cliCtx context.CLIContext,
 // app module
 type AppModule struct {
 	AppModuleBasic
-	keeper   Keeper
-	fcKeeper FeeCollectionKeeper
-	// distrKeeper DistributionKeeper
+	keeper    Keeper
+	fcKeeper  FeeCollectionKeeper
 	accKeeper AccountKeeper
 }
 
@@ -89,8 +88,7 @@ func NewAppModule(keeper Keeper, fcKeeper types.FeeCollectionKeeper, accKeeper A
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
 		fcKeeper:       fcKeeper,
-		// distrKeeper:    distrKeeper,
-		accKeeper: accKeeper,
+		accKeeper:      accKeeper,
 	}
 }
 

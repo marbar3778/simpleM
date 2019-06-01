@@ -3,7 +3,6 @@ package types
 import (
 	"bytes"
 	"fmt"
-	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,7 +24,7 @@ const (
 
 // nolint - Keys for parameter access
 var (
-	KeyUnbondingTime = []byte("UnbondingTime")
+	// KeyUnbondingTime = []byte("UnbondingTime")
 	KeyMaxValidators = []byte("MaxValidators")
 	KeyMaxEntries    = []byte("KeyMaxEntries")
 	KeyBondDenom     = []byte("BondDenom")
@@ -35,9 +34,9 @@ var _ params.ParamSet = (*Params)(nil)
 
 // Params defines the high level settings for staking
 type Params struct {
-	UnbondingTime time.Duration `json:"unbonding_time"` // time duration of unbonding
-	MaxValidators uint16        `json:"max_validators"` // maximum number of validators (max uint16 = 65535)
-	MaxEntries    uint16        `json:"max_entries"`    // max entries for either unbonding delegation or redelegation (per pair/trio)
+	// UnbondingTime time.Duration `json:"unbonding_time"` // time duration of unbonding
+	MaxValidators uint16 `json:"max_validators"` // maximum number of validators (max uint16 = 65535)
+	MaxEntries    uint16 `json:"max_entries"`    // max entries for either unbonding delegation or redelegation (per pair/trio)
 	// note: we need to be a bit careful about potential overflow here, since this is user-determined
 	BondDenom string `json:"bond_denom"` // bondable coin denomination
 }
@@ -55,7 +54,7 @@ func NewParams(maxValidators, maxEntries uint16, bondDenom string) Params {
 // Implements params.ParamSet
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
-		{KeyUnbondingTime, &p.UnbondingTime},
+		// {KeyUnbondingTime, &p.UnbondingTime},
 		{KeyMaxValidators, &p.MaxValidators},
 		{KeyMaxEntries, &p.MaxEntries},
 		{KeyBondDenom, &p.BondDenom},
@@ -78,10 +77,9 @@ func DefaultParams() Params {
 // String returns a human readable string representation of the parameters.
 func (p Params) String() string {
 	return fmt.Sprintf(`Params:
-  Unbonding Time:    %s
   Max Validators:    %d
   Max Entries:       %d
-  Bonded Coin Denom: %s`, p.UnbondingTime,
+  Bonded Coin Denom: %s`,
 		p.MaxValidators, p.MaxEntries, p.BondDenom)
 }
 
