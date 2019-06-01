@@ -12,7 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/marbar3778/simpleM/app"
-	staking "github.com/marbar3778/simpleM/x/simpleStaking"
+	staking "github.com/marbar3778/simpleM/x/aimplePOA"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/spf13/cobra"
