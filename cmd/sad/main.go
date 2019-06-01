@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/x/auth/genaccounts"
 	genaccscli "github.com/cosmos/cosmos-sdk/x/auth/genaccounts/client/cli"
 
@@ -13,13 +14,20 @@ import (
 	"github.com/marbar3778/simpleM/app"
 	staking "github.com/marbar3778/simpleM/x/simpleStaking"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/cli"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
+
+// sad custom flags, coming from gaiad, need to check if its applicable here
+const flagInvCheckPeriod = "inv-check-period"
+
+var invCheckPeriod uint
 
 func main() {
 	cobra.EnableCommandSorting = false
@@ -44,7 +52,9 @@ func main() {
 		genutilcli.InitCmd(ctx, cdc, app.ModuleBasics, app.DefaultNodeHome),
 		genutilcli.ValidateGenesisCmd(ctx, cdc, app.ModuleBasics),
 		genutilcli.CollectGenTxsCmd(ctx, cdc, genaccounts.AppModuleBasic{}, app.DefaultNodeHome),
-		genutilcli.GenTxCmd(ctx, cdc, app.ModuleBasics, genaccounts.AppModuleBasic{}, staking.AppModuleBasic{}, app.DefaultNodeHome, app.DefaultCLIHome),
+		genutilcli.GenTxCmd(ctx, cdc, app.ModuleBasics, staking.AppModuleBasic{}, genaccounts.AppModuleBasic{}, app.DefaultNodeHome, app.DefaultCLIHome),
+	)
+	rootCmd.AddCommand(
 		// AddGenesisAccountCmd allows users to add accounts to the genesis file
 		genaccscli.AddGenesisAccountCmd(ctx, cdc, app.DefaultNodeHome, app.DefaultCLIHome),
 	)
@@ -60,7 +70,11 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	return app.NewNameServiceApp(logger, db)
+	return app.NewSimApp(logger, db, traceStore, true, invCheckPeriod,
+		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+		baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))),
+	)
 }
 
 func exportAppStateAndTMValidators(
@@ -68,15 +82,15 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		nsApp := app.NewNameServiceApp(logger, db)
-		err := nsApp.LoadHeight(height)
+		saApp := app.NewSimApp(logger, db, traceStore, false, uint(1))
+		err := saApp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
 		}
-		return nsApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+		return saApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	nsApp := app.NewNameServiceApp(logger, db)
+	saApp := app.NewSimApp(logger, db, traceStore, true, uint(1))
 
-	return nsApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+	return saApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }

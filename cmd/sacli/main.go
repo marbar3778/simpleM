@@ -19,15 +19,14 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
+	app "github.com/marbar3778/simpleM/app"
 	sst "github.com/marbar3778/simpleM/x/simpleStaking"
 	sstakeclient "github.com/marbar3778/simpleM/x/simpleStaking/client"
 	sstake "github.com/marbar3778/simpleM/x/simpleStaking/client/rest"
-	app "github.com/cosmos/sdk-application-tutorial/app"
 )
 
 const (
 	storeAcc = "acc"
-	storeNS  = "nameservice"
 )
 
 func main() {
@@ -79,8 +78,8 @@ func main() {
 
 func registerRoutes(rs *lcd.RestServer) {
 	rs.CliCtx = rs.CliCtx.WithAccountDecoder(rs.Cdc)
-	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
-	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	rpc.RegisterRPCRoutes(rs.CliCtx, rs.Mux)
+	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeAcc)
 	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	sstake.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)

@@ -140,18 +140,13 @@ func NewSimApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	// initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
 		genaccounts.ModuleName,
-		distr.ModuleName,
-		staking.ModuleName, 
+		staking.ModuleName,
 		auth.ModuleName,
 		bank.ModuleName,
-		slashing.ModuleName,
-		gov.ModuleName, 
-		mint.ModuleName,
-		crisis.ModuleName,
-		genutil.ModuleName
+		genutil.ModuleName,
 	)
 
-	app.mm.RegisterInvariants(&app.crisisKeeper)
+	// app.mm.RegisterInvariants(&app.crisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
 
 	// initialize stores
@@ -159,10 +154,10 @@ func NewSimApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		app.keyMain,
 		app.keyAccount,
 		app.keyStaking,
+		app.tkeyStaking,
 		app.keyFeeCollection,
 		app.keyParams,
 		app.tkeyParams,
-		app.tkeyStaking
 	)
 
 	// initialize BaseApp
