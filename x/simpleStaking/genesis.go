@@ -134,10 +134,7 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 		LastTotalPower:      lastTotalPower,
 		LastValidatorPowers: lastValidatorPowers,
 		Validators:          validators,
-		// Delegations:          delegations,
-		// UnbondingDelegations: unbondingDelegations,
-		// Redelegations:        redelegations,
-		Exported: true,
+		Exported:            true,
 	}
 }
 

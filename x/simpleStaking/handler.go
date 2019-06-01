@@ -23,15 +23,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case types.MsgEditValidator:
 			return handleMsgEditValidator(ctx, msg, k)
 
-		// case types.MsgDelegate:
-		// 	return handleMsgDelegate(ctx, msg, k)
-
-		// case types.MsgBeginRedelegate:
-		// 	return handleMsgBeginRedelegate(ctx, msg, k)
-
-		// case types.MsgUndelegate:
-		// 	return handleMsgUndelegate(ctx, msg, k)
-
 		default:
 			errMsg := fmt.Sprintf("unrecognized staking message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -187,15 +178,15 @@ func handleMsgEditValidator(ctx sdk.Context, msg types.MsgEditValidator, k keepe
 		validator.Commission = commission
 	}
 
-	if msg.MinSelfDelegation != nil {
-		if !(*msg.MinSelfDelegation).GT(validator.MinSelfDelegation) {
-			return ErrMinSelfDelegationDecreased(k.Codespace()).Result()
-		}
-		if (*msg.MinSelfDelegation).GT(validator.Tokens) {
-			return ErrSelfDelegationBelowMinimum(k.Codespace()).Result()
-		}
-		validator.MinSelfDelegation = (*msg.MinSelfDelegation)
-	}
+	// if msg.MinSelfDelegation != nil {
+	// 	if !(*msg.MinSelfDelegation).GT(validator.MinSelfDelegation) {
+	// 		return ErrMinSelfDelegationDecreased(k.Codespace()).Result()
+	// 	}
+	// 	if (*msg.MinSelfDelegation).GT(validator.Tokens) {
+	// 		return ErrSelfDelegationBelowMinimum(k.Codespace()).Result()
+	// 	}
+	// 	validator.MinSelfDelegation = (*msg.MinSelfDelegation)
+	// }
 
 	k.SetValidator(ctx, validator)
 

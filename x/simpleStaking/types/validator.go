@@ -487,6 +487,6 @@ func (v Validator) GetTendermintPower() int64    { return v.TendermintPower() }
 func (v Validator) GetCommission() sdk.Dec       { return v.Commission.Rate }
 func (v Validator) GetDelegatorShares() sdk.Dec  { return v.DelegatorShares }
 
-// func (v Validator) GetBondedTokens() sdk.Int      { return v.BondedTokens() }
+// func (v Validator) GetBondedTokens() sdk.Int { return v.BondedTokens() }
 
 // func (v Validator) GetMinSelfDelegation() sdk.Int { return v.MinSelfDelegation }

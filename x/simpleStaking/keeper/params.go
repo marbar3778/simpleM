@@ -16,12 +16,6 @@ func ParamKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&types.Params{})
 }
 
-// // UnbondingTime
-// func (k Keeper) UnbondingTime(ctx sdk.Context) (res time.Duration) {
-// 	k.paramstore.Get(ctx, types.KeyUnbondingTime, &res)
-// 	return
-// }
-
 // MaxValidators - Maximum number of validators
 func (k Keeper) MaxValidators(ctx sdk.Context) (res uint16) {
 	k.paramstore.Get(ctx, types.KeyMaxValidators, &res)

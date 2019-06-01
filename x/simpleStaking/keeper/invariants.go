@@ -14,10 +14,6 @@ func RegisterInvariants(ir sdk.InvariantRouter, k Keeper, f types.FeeCollectionK
 
 	ir.RegisterRoute(types.ModuleName, "supply", SupplyInvariants(k, f, am))
 	ir.RegisterRoute(types.ModuleName, "nonnegative-power", NonNegativePowerInvariant(k))
-	// ir.RegisterRoute(types.ModuleName, "positive-delegation",
-	// 	PositiveDelegationInvariant(k))
-	// ir.RegisterRoute(types.ModuleName, "delegator-shares",
-	// 	DelegatorSharesInvariant(k))
 }
 
 // AllInvariants runs all invariants of the staking module.
@@ -33,16 +29,6 @@ func AllInvariants(k Keeper, f types.FeeCollectionKeeper, am types.AccountKeeper
 		if err != nil {
 			return err
 		}
-
-		// err = PositiveDelegationInvariant(k)(ctx)
-		// if err != nil {
-		// 	return err
-		// }
-
-		// err = DelegatorSharesInvariant(k)(ctx)
-		// if err != nil {
-		// 	return err
-		// }
 
 		return nil
 	}
@@ -61,21 +47,14 @@ func SupplyInvariants(k Keeper, f types.FeeCollectionKeeper, am types.AccountKee
 			loose = loose.Add(acc.GetCoins().AmountOf(k.BondDenom(ctx)).ToDec())
 			return false
 		})
-		// k.IterateUnbondingDelegations(ctx, func(_ int64, ubd types.UnbondingDelegation) bool {
-		// 	for _, entry := range ubd.Entries {
-		// 		loose = loose.Add(entry.Balance.ToDec())
-		// 	}
-		// 	return false
-		// })
-		k.IterateValidators(ctx, func(_ int64, validator sdk.Validator) bool {
+
+		k.IterateValidators(ctx, func(_ int64, validator types.Validator) bool {
 			switch validator.GetStatus() {
 			case sdk.Bonded:
-				bonded = bonded.Add(validator.GetBondedTokens().ToDec())
+				bonded = bonded.Add(validator.GetPower().ToDec())
 			case sdk.Unbonding, sdk.Unbonded:
-				loose = loose.Add(validator.GetTokens().ToDec())
+				loose = loose.Add(validator.GetPower().ToDec())
 			}
-			// add yet-to-be-withdrawn
-			// loose = loose.Add(d.GetValidatorOutstandingRewardsCoins(ctx, validator.GetOperator()).AmountOf(k.BondDenom(ctx)))
 			return false
 		})
 
@@ -123,7 +102,7 @@ func NonNegativePowerInvariant(k Keeper) sdk.Invariant {
 					validator.GetTendermintPower(), powerKey, iterator.Key())
 			}
 
-			if validator.Tokens.IsNegative() {
+			if validator.Power.IsNegative() {
 				return fmt.Errorf("negative tokens for validator: %v", validator)
 			}
 		}
@@ -131,46 +110,3 @@ func NonNegativePowerInvariant(k Keeper) sdk.Invariant {
 		return nil
 	}
 }
-
-// // PositiveDelegationInvariant checks that all stored delegations have > 0 shares.
-// func PositiveDelegationInvariant(k Keeper) sdk.Invariant {
-// 	return func(ctx sdk.Context) error {
-// 		delegations := k.GetAllDelegations(ctx)
-// 		for _, delegation := range delegations {
-// 			if delegation.Shares.IsNegative() {
-// 				return fmt.Errorf("delegation with negative shares: %+v", delegation)
-// 			}
-// 			if delegation.Shares.IsZero() {
-// 				return fmt.Errorf("delegation with zero shares: %+v", delegation)
-// 			}
-// 		}
-
-// 		return nil
-// 	}
-// }
-
-// // DelegatorSharesInvariant checks whether all the delegator shares which persist
-// // in the delegator object add up to the correct total delegator shares
-// // amount stored in each validator
-// func DelegatorSharesInvariant(k Keeper) sdk.Invariant {
-// 	return func(ctx sdk.Context) error {
-// 		validators := k.GetAllValidators(ctx)
-// 		for _, validator := range validators {
-
-// 			valTotalDelShares := validator.GetDelegatorShares()
-
-// 			totalDelShares := sdk.ZeroDec()
-// 			delegations := k.GetValidatorDelegations(ctx, validator.GetOperator())
-// 			for _, delegation := range delegations {
-// 				totalDelShares = totalDelShares.Add(delegation.Shares)
-// 			}
-
-// 			if !valTotalDelShares.Equal(totalDelShares) {
-// 				return fmt.Errorf("broken delegator shares invariance:\n"+
-// 					"\tvalidator.DelegatorShares: %v\n"+
-// 					"\tsum of Delegator.Shares: %v", valTotalDelShares, totalDelShares)
-// 			}
-// 		}
-// 		return nil
-// 	}
-// }
