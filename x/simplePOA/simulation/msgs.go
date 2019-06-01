@@ -8,8 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/marbar3778/simpleM/x/aimplePOA"
-	"github.com/marbar3778/simpleM/x/aimplePOA/keeper"
+	"github.com/marbar3778/simpleM/x/simplePOA"
+	"github.com/marbar3778/simpleM/x/simplePOA/keeper"
 )
 
 // SimulateMsgCreateValidator

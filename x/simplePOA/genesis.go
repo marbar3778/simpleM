@@ -7,8 +7,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 // InitGenesis sets the pool and parameters for the provided keeper.  For each
@@ -26,15 +25,15 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, accountKeeper types.AccountKeep
 	ctx = ctx.WithBlockHeight(1 - sdk.ValidatorUpdateDelay)
 
 	// manually set the total supply for staking based on accounts if not provided
-	if data.Pool.NotBondedTokens.IsZero() {
-		accountKeeper.IterateAccounts(ctx,
-			func(acc auth.Account) (stop bool) {
-				data.Pool.NotBondedTokens = data.Pool.NotBondedTokens.
-					Add(acc.GetCoins().AmountOf(data.Params.BondDenom))
-				return false
-			},
-		)
-	}
+	// if data.Pool.NotBondedTokens.IsZero() {
+	// 	accountKeeper.IterateAccounts(ctx,
+	// 		func(acc auth.Account) (stop bool) {
+	// 			data.Pool.NotBondedTokens = data.Pool.NotBondedTokens.
+	// 				Add(acc.GetCoins().AmountOf(data.Params.BondDenom)) TODO: POOl only goes to validators
+	// 			return false
+	// 		},
+	// 	)
+	// }
 
 	keeper.SetPool(ctx, data.Pool) // TODO remove pool from genesis data and always calculate?
 	keeper.SetParams(ctx, data.Params)
@@ -140,7 +139,7 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 
 // WriteValidators returns a slice of bonded genesis validators.
 func WriteValidators(ctx sdk.Context, keeper Keeper) (vals []tmtypes.GenesisValidator) {
-	keeper.IterateLastValidators(ctx, func(_ int64, validator sdk.Validator) (stop bool) {
+	keeper.IterateLastValidators(ctx, func(_ int64, validator types.Validator) (stop bool) {
 		vals = append(vals, tmtypes.GenesisValidator{
 			PubKey: validator.GetConsPubKey(),
 			Power:  validator.GetTendermintPower(),

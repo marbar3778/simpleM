@@ -20,9 +20,9 @@ import (
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	app "github.com/marbar3778/simpleM/app"
-	sst "github.com/marbar3778/simpleM/x/aimplePOA"
-	sstakeclient "github.com/marbar3778/simpleM/x/aimplePOA/client"
-	sstake "github.com/marbar3778/simpleM/x/aimplePOA/client/rest"
+	sst "github.com/marbar3778/simpleM/x/simplePOA"
+	sstakeclient "github.com/marbar3778/simpleM/x/simplePOA/client"
+	sstake "github.com/marbar3778/simpleM/x/simplePOA/client/rest"
 )
 
 const (

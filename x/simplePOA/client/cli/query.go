@@ -10,8 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/marbar3778/simpleM/x/aimplePOA/querier"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	"github.com/marbar3778/simpleM/x/simplePOA/querier"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 // GetCmdQueryValidator implements the validator query command.

@@ -18,7 +18,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 // GetCmdCreateValidator implements the create validator command handler.

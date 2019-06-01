@@ -22,7 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/params"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 // dummy addresses used for testing
@@ -130,7 +130,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 		err := error(nil)
 		if !initCoins.IsZero() {
 			_, err = ck.AddCoins(ctx, addr, sdk.Coins{
-				{keeper.BondDenom(ctx), initCoins},
+				// {keeper.BondDenom(ctx), initCoins},
 			})
 		}
 		require.Nil(t, err)

@@ -11,8 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	staking "github.com/marbar3778/simpleM/x/aimplePOA"
-	"github.com/marbar3778/simpleM/x/aimplePOA/tags"
+	staking "github.com/marbar3778/simpleM/x/simplePOA"
+	"github.com/marbar3778/simpleM/x/simplePOA/tags"
 )
 
 // contains checks if the a given query contains one of the tx types

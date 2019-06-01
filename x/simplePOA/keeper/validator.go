@@ -6,7 +6,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 // Cache the amino decoding of validators, as it can be the case that repeated slashing calls
@@ -133,31 +133,31 @@ func (k Keeper) AddValidatorTokensAndShares(ctx sdk.Context, validator types.Val
 	return validator, addedShares
 }
 
-// Update the tokens of an existing validator, update the validators power index key
-func (k Keeper) RemoveValidatorTokensAndShares(ctx sdk.Context, validator types.Validator,
-	sharesToRemove sdk.Dec) (valOut types.Validator, removedTokens sdk.Int) {
+// // Update the tokens of an existing validator, update the validators power index key
+// func (k Keeper) RemoveValidatorTokensAndShares(ctx sdk.Context, validator types.Validator,
+// 	sharesToRemove sdk.Dec) (valOut types.Validator, removedTokens sdk.Int) {
 
-	k.DeleteValidatorByPowerIndex(ctx, validator)
-	pool := k.GetPool(ctx)
-	validator, pool, removedTokens = validator.RemoveDelShares(pool, sharesToRemove)
-	k.SetValidator(ctx, validator)
-	k.SetPool(ctx, pool)
-	k.SetValidatorByPowerIndex(ctx, validator)
-	return validator, removedTokens
-}
+// 	k.DeleteValidatorByPowerIndex(ctx, validator)
+// 	pool := k.GetPool(ctx)
+// 	validator, pool, removedTokens = validator.RemoveDelShares(pool, sharesToRemove)
+// 	k.SetValidator(ctx, validator)
+// 	k.SetPool(ctx, pool)
+// 	k.SetValidatorByPowerIndex(ctx, validator)
+// 	return validator, removedTokens
+// }
 
-// Update the tokens of an existing validator, update the validators power index key
-func (k Keeper) RemoveValidatorTokens(ctx sdk.Context,
-	validator types.Validator, tokensToRemove sdk.Int) types.Validator {
+// // Update the tokens of an existing validator, update the validators power index key
+// func (k Keeper) RemoveValidatorTokens(ctx sdk.Context,
+// 	validator types.Validator, tokensToRemove sdk.Int) types.Validator {
 
-	k.DeleteValidatorByPowerIndex(ctx, validator)
-	pool := k.GetPool(ctx)
-	validator, pool = validator.RemoveTokens(pool, tokensToRemove)
-	k.SetValidator(ctx, validator)
-	k.SetPool(ctx, pool)
-	k.SetValidatorByPowerIndex(ctx, validator)
-	return validator
-}
+// 	k.DeleteValidatorByPowerIndex(ctx, validator)
+// 	pool := k.GetPool(ctx)
+// 	validator, pool = validator.RemoveTokens(pool, tokensToRemove)					TODO: Change to remove power
+// 	k.SetValidator(ctx, validator)
+// 	k.SetPool(ctx, pool)
+// 	k.SetValidatorByPowerIndex(ctx, validator)
+// 	return validator
+// }
 
 // UpdateValidatorCommission attempts to update a validator's commission rate.
 // An error is returned if the new commission rate is invalid.
@@ -190,10 +190,10 @@ func (k Keeper) RemoveValidator(ctx sdk.Context, address sdk.ValAddress) {
 	if validator.Status != sdk.Unbonded {
 		panic("cannot call RemoveValidator on bonded or unbonding validators")
 	}
-	if validator.Tokens.IsPositive() {
+	if validator.Power.IsPositive() {
 		panic("attempting to remove a validator which still contains tokens")
 	}
-	if validator.Tokens.GT(sdk.ZeroInt()) {
+	if validator.Power.GT(sdk.ZeroInt()) {
 		panic("validator being removed should never have positive tokens")
 	}
 

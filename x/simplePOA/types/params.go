@@ -5,29 +5,22 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 )
 
 const (
-	// DefaultUnbondingTime reflects three weeks in seconds as the default
-	// unbonding time.
-	// TODO: Justify our choice of default here.
-	// DefaultUnbondingTime time.Duration = time.Second * 60 * 60 * 24 * 3
-
 	// Default maximum number of bonded validators
 	DefaultMaxValidators uint16 = 100
 
 	// Default maximum entries in a UBD/RED pair
-	DefaultMaxEntries uint16 = 7
+	// DefaultMaxEntries uint16 = 7
 )
 
 // nolint - Keys for parameter access
 var (
 	// KeyUnbondingTime = []byte("UnbondingTime")
 	KeyMaxValidators = []byte("MaxValidators")
-	KeyMaxEntries    = []byte("KeyMaxEntries")
-	KeyBondDenom     = []byte("BondDenom")
+	// KeyMaxEntries    = []byte("KeyMaxEntries")
 )
 
 var _ params.ParamSet = (*Params)(nil)
@@ -36,18 +29,15 @@ var _ params.ParamSet = (*Params)(nil)
 type Params struct {
 	// UnbondingTime time.Duration `json:"unbonding_time"` // time duration of unbonding
 	MaxValidators uint16 `json:"max_validators"` // maximum number of validators (max uint16 = 65535)
-	MaxEntries    uint16 `json:"max_entries"`    // max entries for either unbonding delegation or redelegation (per pair/trio)
+	// MaxEntries    uint16 `json:"max_entries"`    // max entries for either unbonding delegation or redelegation (per pair/trio)
 	// note: we need to be a bit careful about potential overflow here, since this is user-determined
-	BondDenom string `json:"bond_denom"` // bondable coin denomination
 }
 
-func NewParams(maxValidators, maxEntries uint16, bondDenom string) Params {
+func NewParams(maxValidators uint16) Params {
 
 	return Params{
 		// UnbondingTime: unbondingTime,
 		MaxValidators: maxValidators,
-		MaxEntries:    maxEntries,
-		BondDenom:     bondDenom,
 	}
 }
 
@@ -56,8 +46,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
 		// {KeyUnbondingTime, &p.UnbondingTime},
 		{KeyMaxValidators, &p.MaxValidators},
-		{KeyMaxEntries, &p.MaxEntries},
-		{KeyBondDenom, &p.BondDenom},
+		// {KeyMaxEntries, &p.MaxEntries},
 	}
 }
 
@@ -71,16 +60,12 @@ func (p Params) Equal(p2 Params) bool {
 
 // DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
-	return NewParams(DefaultMaxValidators, DefaultMaxEntries, sdk.DefaultBondDenom)
+	return NewParams(DefaultMaxValidators)
 }
 
 // String returns a human readable string representation of the parameters.
 func (p Params) String() string {
-	return fmt.Sprintf(`Params:
-  Max Validators:    %d
-  Max Entries:       %d
-  Bonded Coin Denom: %s`,
-		p.MaxValidators, p.MaxEntries, p.BondDenom)
+	return fmt.Sprintf(`Params: Max Validators:    %d`, p.MaxValidators)
 }
 
 // unmarshal the current staking params value from store key or panic
@@ -103,9 +88,6 @@ func UnmarshalParams(cdc *codec.Codec, value []byte) (params Params, err error) 
 
 // validate a set of params
 func (p Params) Validate() error {
-	if p.BondDenom == "" {
-		return fmt.Errorf("staking parameter BondDenom can't be an empty string")
-	}
 	if p.MaxValidators == 0 {
 		return fmt.Errorf("staking parameter MaxValidators must be a positive integer")
 	}

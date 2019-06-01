@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 
 	"github.com/cosmos/cosmos-sdk/x/params"
-	staking "github.com/marbar3778/simpleM/x/aimplePOA"
+	staking "github.com/marbar3778/simpleM/x/simplePOA"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 	cmn "github.com/tendermint/tendermint/libs/common"

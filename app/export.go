@@ -9,7 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	staking "github.com/marbar3778/simpleM/x/aimplePOA"
+	staking "github.com/marbar3778/simpleM/x/simplePOA"
 )
 
 // export the state of gaia for a genesis file

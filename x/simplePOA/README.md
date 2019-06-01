@@ -1,4 +1,4 @@
-# aimplePOA --> POA module
+# simplePOA --> POA module
 
 The end goal of this module it to have it be similar to how the POA network works. 
 

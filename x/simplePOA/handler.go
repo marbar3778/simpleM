@@ -8,9 +8,9 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/marbar3778/simpleM/x/aimplePOA/keeper"
-	"github.com/marbar3778/simpleM/x/aimplePOA/tags"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	"github.com/marbar3778/simpleM/x/simplePOA/keeper"
+	"github.com/marbar3778/simpleM/x/simplePOA/tags"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
@@ -97,9 +97,9 @@ func handleMsgCreateValidator(ctx sdk.Context, msg types.MsgCreateValidator, k k
 		return ErrValidatorPubKeyExists(k.Codespace()).Result()
 	}
 
-	if msg.Value.Denom != k.GetParams(ctx).BondDenom {
-		return ErrBadDenom(k.Codespace()).Result()
-	}
+	// if msg.Value.Denom != k.GetParams(ctx).BondDenom {
+	// 	return ErrBadDenom(k.Codespace()).Result()
+	// }
 
 	if _, err := msg.Description.EnsureLength(); err != nil {
 		return err.Result()
@@ -124,7 +124,7 @@ func handleMsgCreateValidator(ctx sdk.Context, msg types.MsgCreateValidator, k k
 		return err.Result()
 	}
 
-	validator.MinSelfDelegation = msg.MinSelfDelegation // need to remove msgSelfdelegation
+	// validator.MinSelfDelegation = msg.MinSelfDelegation // need to remove msgSelfdelegation
 
 	k.SetValidator(ctx, validator)
 	k.SetValidatorByConsAddr(ctx, validator)

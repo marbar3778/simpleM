@@ -8,7 +8,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 // Apply and return accumulated updates to the bonded validator set. Also,
@@ -197,7 +197,7 @@ func (k Keeper) bondValidator(ctx sdk.Context, validator types.Validator) types.
 // perform all the store operations for when a validator begins unbonding
 func (k Keeper) beginUnbondingValidator(ctx sdk.Context, validator types.Validator) types.Validator {
 
-	params := k.GetParams(ctx)
+	// params := k.GetParams(ctx)
 
 	// delete the validator by power index, as the key will change
 	k.DeleteValidatorByPowerIndex(ctx, validator)
@@ -213,7 +213,7 @@ func (k Keeper) beginUnbondingValidator(ctx sdk.Context, validator types.Validat
 	k.SetPool(ctx, pool)
 
 	// set the unbonding completion time and completion height appropriately
-	validator.UnbondingCompletionTime = ctx.BlockHeader().Time.Add(params.UnbondingTime)
+	// validator.UnbondingCompletionTime = ctx.BlockHeader().Time.Add(params.UnbondingTime)
 	validator.UnbondingHeight = ctx.BlockHeader().Height
 
 	// save the now unbonded validator record and power index

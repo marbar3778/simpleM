@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ptypes "github.com/marbar3778/simpleM/x/aimplePOA/types"
+	ptypes "github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 // Implements ValidatorSet
@@ -73,7 +73,7 @@ func (k Keeper) IterateLastValidators(ctx sdk.Context, fn func(index int64, vali
 func (k Keeper) Validator(ctx sdk.Context, address sdk.ValAddress) ptypes.Validator {
 	val, found := k.GetValidator(ctx, address)
 	if !found {
-		return
+		return ptypes.Validator{}
 	}
 	return val
 }
@@ -82,7 +82,7 @@ func (k Keeper) Validator(ctx sdk.Context, address sdk.ValAddress) ptypes.Valida
 func (k Keeper) ValidatorByConsAddr(ctx sdk.Context, addr sdk.ConsAddress) ptypes.Validator {
 	val, found := k.GetValidatorByConsAddr(ctx, addr)
 	if !found {
-		return nil
+		return ptypes.Validator{}
 	}
 	return val
 }
@@ -114,10 +114,10 @@ func (k Keeper) InflateSupply(ctx sdk.Context, newTokens sdk.Int) {
 
 // Implements DelegationSet
 
-var _ sdk.DelegationSet = Keeper{}
+// var _ sdk.DelegationSet = Keeper{}
 
 // Returns self as it is both a validatorset and delegationset
-func (k Keeper) GetValidatorSet() sdk.ValidatorSet {
+func (k Keeper) GetValidatorSet() interface{} {
 	return k
 }
 
@@ -136,11 +136,11 @@ func (k Keeper) IterateDelegations(ctx sdk.Context, delAddr sdk.AccAddress,
 	fn func(index int64, del sdk.Delegation) (stop bool)) {
 
 	store := ctx.KVStore(k.storeKey)
-	delegatorPrefixKey := types.GetDelegationsKey(delAddr)
+	delegatorPrefixKey := ptypes.GetDelegationsKey(delAddr)
 	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) // smallest to largest
 	defer iterator.Close()
 	for i := int64(0); iterator.Valid(); iterator.Next() {
-		del := types.MustUnmarshalDelegation(k.cdc, iterator.Value())
+		del := ptypes.MustUnmarshalDelegation(k.cdc, iterator.Value())
 		stop := fn(i, del)
 		if stop {
 			break
@@ -153,11 +153,11 @@ func (k Keeper) IterateDelegations(ctx sdk.Context, delAddr sdk.AccAddress,
 // TODO: remove this func, change all usage for iterate functionality
 func (k Keeper) GetAllSDKDelegations(ctx sdk.Context) (delegations []sdk.Delegation) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.DelegationKey)
+	iterator := sdk.KVStorePrefixIterator(store, ptypes.DelegationKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		delegation := types.MustUnmarshalDelegation(k.cdc, iterator.Value())
+		delegation := ptypes.MustUnmarshalDelegation(k.cdc, iterator.Value())
 		delegations = append(delegations, delegation)
 	}
 	return delegations

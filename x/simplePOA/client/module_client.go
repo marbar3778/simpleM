@@ -5,8 +5,8 @@ import (
 	amino "github.com/tendermint/go-amino"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/marbar3778/simpleM/x/aimplePOA/client/cli"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	"github.com/marbar3778/simpleM/x/simplePOA/client/cli"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 // ModuleClient exports all client functionality from this module

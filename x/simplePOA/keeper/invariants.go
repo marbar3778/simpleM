@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 // register all staking invariants
@@ -43,10 +42,10 @@ func SupplyInvariants(k Keeper, f types.FeeCollectionKeeper, am types.AccountKee
 
 		loose := sdk.ZeroDec()
 		bonded := sdk.ZeroDec()
-		am.IterateAccounts(ctx, func(acc auth.Account) bool {
-			loose = loose.Add(acc.GetCoins().AmountOf(k.BondDenom(ctx)).ToDec())
-			return false
-		})
+		// am.IterateAccounts(ctx, func(acc auth.Account) bool {
+		// 	loose = loose.Add(acc.GetCoins().AmountOf(k.BondDenom(ctx)).ToDec())
+		// 	return false
+		// })
 
 		k.IterateValidators(ctx, func(_ int64, validator types.Validator) bool {
 			switch validator.GetStatus() {
@@ -59,7 +58,7 @@ func SupplyInvariants(k Keeper, f types.FeeCollectionKeeper, am types.AccountKee
 		})
 
 		// add outstanding fees
-		loose = loose.Add(f.GetCollectedFees(ctx).AmountOf(k.BondDenom(ctx)).ToDec())
+		// loose = loose.Add(f.GetCollectedFees(ctx).AmountOf(k.BondDenom(ctx)).ToDec())
 
 		// add community pool
 		// loose = loose.Add(d.GetFeePoolCommunityCoins(ctx).AmountOf(k.BondDenom(ctx)))

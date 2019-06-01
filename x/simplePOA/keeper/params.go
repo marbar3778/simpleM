@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 // Default parameter namespace
@@ -22,26 +22,11 @@ func (k Keeper) MaxValidators(ctx sdk.Context) (res uint16) {
 	return
 }
 
-// MaxEntries - Maximum number of simultaneous unbonding
-// delegations or redelegations (per pair/trio)
-func (k Keeper) MaxEntries(ctx sdk.Context) (res uint16) {
-	k.paramstore.Get(ctx, types.KeyMaxEntries, &res)
-	return
-}
-
-// BondDenom - Bondable coin denomination
-func (k Keeper) BondDenom(ctx sdk.Context) (res string) {
-	k.paramstore.Get(ctx, types.KeyBondDenom, &res)
-	return
-}
-
 // Get all parameteras as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		// k.UnbondingTime(ctx),
 		k.MaxValidators(ctx),
-		k.MaxEntries(ctx),
-		k.BondDenom(ctx),
 	)
 }
 

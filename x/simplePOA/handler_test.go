@@ -13,8 +13,8 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	keep "github.com/marbar3778/simpleM/x/aimplePOA/keeper"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	keep "github.com/marbar3778/simpleM/x/simplePOA/keeper"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 //______________________________________________________________________

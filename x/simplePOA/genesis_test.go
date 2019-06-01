@@ -12,8 +12,8 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	keep "github.com/marbar3778/simpleM/x/aimplePOA/keeper"
-	"github.com/marbar3778/simpleM/x/aimplePOA/types"
+	keep "github.com/marbar3778/simpleM/x/simplePOA/keeper"
+	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
 func TestInitGenesis(t *testing.T) {
