@@ -140,9 +140,9 @@ func NewSimApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	// initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
 		genaccounts.ModuleName,
-		staking.ModuleName,
 		auth.ModuleName,
 		bank.ModuleName,
+		staking.ModuleName,
 		genutil.ModuleName,
 	)
 

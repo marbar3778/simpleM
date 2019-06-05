@@ -1,9 +1,11 @@
 # simplePOA --> POA module
 
-The end goal of this module it to have it be similar to how the POA network works. 
+The end goal of this module it to have it be similar to how the POA network works.
 
 ## TODO
-- Remove ability to delegate
+
+- [x] Remove ability to delegate
+- [] creation of validator should not set money
 - Remove reference to tokens/coins/money
 - Change validators to authorities
 - Add power to authority on creation

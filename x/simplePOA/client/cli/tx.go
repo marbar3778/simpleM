@@ -45,13 +45,11 @@ func GetCmdCreateValidator(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().AddFlagSet(FsAmount)
 	cmd.Flags().AddFlagSet(fsDescriptionCreate)
 	cmd.Flags().AddFlagSet(FsCommissionCreate)
-	cmd.Flags().AddFlagSet(FsMinSelfDelegation)
 
 	cmd.Flags().String(FlagIP, "", fmt.Sprintf("The node's public IP. It takes effect only when used in combination with --%s", client.FlagGenerateOnly))
 	cmd.Flags().String(FlagNodeID, "", "The node's ID")
 
 	cmd.MarkFlagRequired(client.FlagFrom)
-	cmd.MarkFlagRequired(FlagAmount)
 	cmd.MarkFlagRequired(FlagPubKey)
 	cmd.MarkFlagRequired(FlagMoniker)
 
