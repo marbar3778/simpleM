@@ -30,14 +30,7 @@ func (k Keeper) SetDelegation(ctx sdk.Context, delegation types.Delegation) {
 
 // Perform a delegation, set/update everything necessary within the store.
 func (k Keeper) Delegate(ctx sdk.Context, delAddr sdk.AccAddress, power sdk.Int,
-	validator types.Validator) (newShares sdk.Dec, err sdk.Error) {
-
-	// In some situations, the exchange rate becomes invalid, e.g. if
-	// Validator loses all tokens due to slashing. In this case,
-	// make all future delegations invalid.
-	if validator.InvalidExRate() {
-		return sdk.ZeroDec(), types.ErrDelegatorShareExRateInvalid(k.Codespace())
-	}
+	validator types.Authority) (newShares sdk.Dec, err sdk.Error) {
 
 	// Get or create the delegation object
 	delegation, found := k.GetDelegation(ctx, delAddr, validator.OperatorAddress)

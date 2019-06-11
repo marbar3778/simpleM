@@ -208,10 +208,7 @@ var (
 	UnbondingQueueKey                = types.UnbondingQueueKey
 	RedelegationQueueKey             = types.RedelegationQueueKey
 	ValidatorQueueKey                = types.ValidatorQueueKey
-	// KeyUnbondingTime                 = types.KeyUnbondingTime
-	KeyMaxValidators = types.KeyMaxValidators
-	// KeyMaxEntries                    = types.KeyMaxEntries
-	// KeyBondDenom                     = types.KeyBondDenom
+	KeyMaxValidators                 = types.KeyMaxValidators
 )
 
 type (
@@ -239,21 +236,17 @@ type (
 	RedelegationEntryResponse = types.RedelegationEntryResponse
 	RedelegationResponses     = types.RedelegationResponses
 	CodeType                  = types.CodeType
-	// DistributionKeeper        = types.DistributionKeeper
-	FeeCollectionKeeper = types.FeeCollectionKeeper
-	BankKeeper          = types.BankKeeper
-	AccountKeeper       = types.AccountKeeper
-	GenesisState        = types.GenesisState
-	LastValidatorPower  = types.LastValidatorPower
-	MultiStakingHooks   = types.MultiStakingHooks
-	MsgCreateValidator  = types.MsgCreateValidator
-	MsgEditValidator    = types.MsgEditValidator
-	// MsgDelegate         = types.MsgDelegate
-	// MsgBeginRedelegate  = types.MsgBeginRedelegate
-	// MsgUndelegate       = types.MsgUndelegate
-	Params      = types.Params
-	Pool        = types.Pool
-	Validator   = types.Validator
-	Validators  = types.Validators
-	Description = types.Description
+	FeeCollectionKeeper       = types.FeeCollectionKeeper
+	BankKeeper                = types.BankKeeper
+	AccountKeeper             = types.AccountKeeper
+	GenesisState              = types.GenesisState
+	LastValidatorPower        = types.LastValidatorPower
+	MultiStakingHooks         = types.MultiStakingHooks
+	MsgCreateValidator        = types.MsgCreateValidator
+	MsgEditValidator          = types.MsgEditValidator
+	Params                    = types.Params
+	Pool                      = types.Pool
+	Validator                 = types.Validator
+	Validators                = types.Validators
+	Description               = types.Description
 )

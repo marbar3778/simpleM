@@ -7,8 +7,8 @@ import (
 
 // Return all validators that a delegator is bonded to. If maxRetrieve is supplied, the respective amount will be returned.
 func (k Keeper) GetDelegatorValidators(ctx sdk.Context, delegatorAddr sdk.AccAddress,
-	maxRetrieve uint16) (validators []types.Validator) {
-	validators = make([]types.Validator, maxRetrieve)
+	maxRetrieve uint16) (validators []types.Authority) {
+	validators = make([]types.Authority, maxRetrieve)
 
 	store := ctx.KVStore(k.storeKey)
 	delegatorPrefixKey := types.GetDelegationsKey(delegatorAddr)
@@ -31,7 +31,7 @@ func (k Keeper) GetDelegatorValidators(ctx sdk.Context, delegatorAddr sdk.AccAdd
 
 // return a validator that a delegator is bonded to
 func (k Keeper) GetDelegatorValidator(ctx sdk.Context, delegatorAddr sdk.AccAddress,
-	validatorAddr sdk.ValAddress) (validator types.Validator, err sdk.Error) {
+	validatorAddr sdk.ValAddress) (validator types.Authority, err sdk.Error) {
 
 	delegation, found := k.GetDelegation(ctx, delegatorAddr, validatorAddr)
 	if !found {

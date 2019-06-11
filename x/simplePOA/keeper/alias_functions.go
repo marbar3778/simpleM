@@ -11,7 +11,7 @@ import (
 // var _ sdk.ValidatorSet = Keeper{}
 
 // iterate through the validator set and perform the provided function
-func (k Keeper) IterateValidators(ctx sdk.Context, fn func(index int64, validator ptypes.Validator) (stop bool)) {
+func (k Keeper) IterateValidators(ctx sdk.Context, fn func(index int64, validator ptypes.Authority) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, ptypes.ValidatorsKey)
 	defer iterator.Close()
@@ -27,7 +27,7 @@ func (k Keeper) IterateValidators(ctx sdk.Context, fn func(index int64, validato
 }
 
 // iterate through the bonded validator set and perform the provided function
-func (k Keeper) IterateBondedValidatorsByPower(ctx sdk.Context, fn func(index int64, validator ptypes.Validator) (stop bool)) {
+func (k Keeper) IterateBondedValidatorsByPower(ctx sdk.Context, fn func(index int64, validator ptypes.Authority) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	maxValidators := k.MaxValidators(ctx)
 
@@ -50,7 +50,7 @@ func (k Keeper) IterateBondedValidatorsByPower(ctx sdk.Context, fn func(index in
 }
 
 // iterate through the active validator set and perform the provided function
-func (k Keeper) IterateLastValidators(ctx sdk.Context, fn func(index int64, validator ptypes.Validator) (stop bool)) {
+func (k Keeper) IterateLastValidators(ctx sdk.Context, fn func(index int64, validator ptypes.Authority) (stop bool)) {
 	iterator := k.LastValidatorsIterator(ctx)
 	defer iterator.Close()
 	i := int64(0)
@@ -70,19 +70,19 @@ func (k Keeper) IterateLastValidators(ctx sdk.Context, fn func(index int64, vali
 }
 
 // get the sdk.validator for a particular address
-func (k Keeper) Validator(ctx sdk.Context, address sdk.ValAddress) ptypes.Validator {
+func (k Keeper) Validator(ctx sdk.Context, address sdk.ValAddress) ptypes.Authority {
 	val, found := k.GetValidator(ctx, address)
 	if !found {
-		return ptypes.Validator{}
+		return ptypes.Authority{}
 	}
 	return val
 }
 
 // get the sdk.validator for a particular pubkey
-func (k Keeper) ValidatorByConsAddr(ctx sdk.Context, addr sdk.ConsAddress) ptypes.Validator {
+func (k Keeper) ValidatorByConsAddr(ctx sdk.Context, addr sdk.ConsAddress) ptypes.Authority {
 	val, found := k.GetValidatorByConsAddr(ctx, addr)
 	if !found {
-		return ptypes.Validator{}
+		return ptypes.Authority{}
 	}
 	return val
 }

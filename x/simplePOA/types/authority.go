@@ -30,25 +30,22 @@ const (
 // delegation whose number of bond shares is based on the amount of coins delegated
 // divided by the current exchange rate. Voting power can be calculated as total
 // bonded shares multiplied by exchange rate.
-type Validator struct {
+type Authority struct {
 	OperatorAddress         sdk.ValAddress `json:"operator_address"` // address of the validator's operator; bech encoded in JSON
 	ConsPubKey              crypto.PubKey  `json:"consensus_pubkey"` // the consensus public key of the validator; bech encoded in JSON
 	Jailed                  bool           `json:"jailed"`           // has the validator been jailed from bonded status?
 	Status                  sdk.BondStatus `json:"status"`           // validator status (bonded/unbonding/unbonded)
-	DelegatorShares         sdk.Dec        `json:"delegator_shares"` // total shares issued to a validator's delegators
 	Description             Description    `json:"description"`      // description terms for the validator
 	UnbondingHeight         int64          `json:"unbonding_height"` // if unbonding, height at which this validator has begun unbonding
 	UnbondingCompletionTime time.Time      `json:"unbonding_time"`   // if unbonding, min time for the validator to complete unbonding
 	Commission              Commission     `json:"commission"`       // commission parameters
 	Power                   sdk.Int        `json:"power"`            // Power associated with POA, will be default unless set
-	// Tokens                  sdk.Int        `json:"tokens"`           // delegated tokens (incl. self-delegation)
-	// MinSelfDelegation       sdk.Int        `json:"min_self_delegation"` // validator's self declared minimum self delegation
 }
 
 // Validators is a collection of Validator
-type Validators []Validator
+type Authorities []Authority
 
-func (v Validators) String() (out string) {
+func (v Authorities) String() (out string) {
 	for _, val := range v {
 		out += val.String() + "\n"
 	}
@@ -56,54 +53,50 @@ func (v Validators) String() (out string) {
 }
 
 // ToSDKValidators -  convenience function convert []Validators to []sdk.Validators
-func (v Validators) ToSDKValidators() (validators []Validator) {
-	for _, val := range v {
-		validators = append(validators, val)
+func (a Authorities) ToSDKValidators() (authorities []Authority) {
+	for _, val := range a {
+		authorities = append(authorities, val)
 	}
-	return validators
+	return
 }
 
 // NewValidator - initialize a new validator
-func NewValidator(operator sdk.ValAddress, pubKey crypto.PubKey, description Description) Validator {
-	return Validator{
+func NewAuthority(operator sdk.ValAddress, pubKey crypto.PubKey, description Description) Authority {
+	return Authority{
 		OperatorAddress:         operator,
 		ConsPubKey:              pubKey,
 		Jailed:                  false,
 		Status:                  sdk.Unbonded,
-		DelegatorShares:         sdk.ZeroDec(),
 		Description:             description,
 		UnbondingHeight:         int64(0),
 		UnbondingCompletionTime: time.Unix(0, 0).UTC(),
-		Commission:              NewCommission(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
 		Power:                   sdk.ZeroInt(),
-		// Tokens:                  sdk.ZeroInt(),
-		// MinSelfDelegation:       sdk.OneInt(),
 	}
 }
 
 // return the redelegation
-func MustMarshalValidator(cdc *codec.Codec, validator Validator) []byte {
-	return cdc.MustMarshalBinaryLengthPrefixed(validator)
+func MustMarshalValidator(cdc *codec.Codec, authority Authority) []byte {
+	return cdc.MustMarshalBinaryLengthPrefixed(authority)
 }
 
 // unmarshal a redelegation from a store value
-func MustUnmarshalValidator(cdc *codec.Codec, value []byte) Validator {
-	validator, err := UnmarshalValidator(cdc, value)
+func MustUnmarshalValidator(cdc *codec.Codec, value []byte) Authority {
+	authority, err := UnmarshalValidator(cdc, value)
 	if err != nil {
 		panic(err)
 	}
-	return validator
+	return authority
 }
 
 // unmarshal a redelegation from a store value
-func UnmarshalValidator(cdc *codec.Codec, value []byte) (validator Validator, err error) {
-	err = cdc.UnmarshalBinaryLengthPrefixed(value, &validator)
-	return validator, err
+func UnmarshalValidator(cdc *codec.Codec, value []byte) (authority Authority, err error) {
+	err = cdc.UnmarshalBinaryLengthPrefixed(value, &authority)
+	return
 }
 
 // String returns a human readable string representation of a validator.
-func (v Validator) String() string {
-	bechConsPubKey, err := sdk.Bech32ifyConsPub(v.ConsPubKey)
+func (a Authority) String() string {
+	bechConsPubKey, err := sdk.Bech32ifyConsPub(a.ConsPubKey)
 	if err != nil {
 		panic(err)
 	}
@@ -113,14 +106,12 @@ func (v Validator) String() string {
   Jailed:                     %v
   Status:                     %s
   Power:                     	%s
-  Delegator Shares:           %s
   Description:                %s
   Unbonding Height:           %d
   Unbonding Completion Time:  %v
-  Commission:                 %s`, v.OperatorAddress, bechConsPubKey,
-		v.Jailed, v.Status, v.Power,
-		v.DelegatorShares, v.Description,
-		v.UnbondingHeight, v.UnbondingCompletionTime, v.Commission)
+  Commission:                 %s`, a.OperatorAddress, bechConsPubKey,
+		a.Jailed, a.Status, a.Power,
+		a.Description, a.UnbondingHeight, a.UnbondingCompletionTime, a.Commission)
 }
 
 // this is a helper struct used for JSON de- and encoding only
@@ -140,30 +131,29 @@ type bechValidator struct {
 }
 
 // MarshalJSON marshals the validator to JSON using Bech32
-func (v Validator) MarshalJSON() ([]byte, error) {
-	bechConsPubKey, err := sdk.Bech32ifyConsPub(v.ConsPubKey)
+func (a Authority) MarshalJSON() ([]byte, error) {
+	bechConsPubKey, err := sdk.Bech32ifyConsPub(a.ConsPubKey)
 	if err != nil {
 		return nil, err
 	}
 
 	return codec.Cdc.MarshalJSON(bechValidator{
-		OperatorAddress:         v.OperatorAddress,
+		OperatorAddress:         a.OperatorAddress,
 		ConsPubKey:              bechConsPubKey,
-		Jailed:                  v.Jailed,
-		Status:                  v.Status,
-		DelegatorShares:         v.DelegatorShares,
-		Description:             v.Description,
-		UnbondingHeight:         v.UnbondingHeight,
-		UnbondingCompletionTime: v.UnbondingCompletionTime,
-		Commission:              v.Commission,
-		Power:                   v.Power,
+		Jailed:                  a.Jailed,
+		Status:                  a.Status,
+		Description:             a.Description,
+		UnbondingHeight:         a.UnbondingHeight,
+		UnbondingCompletionTime: a.UnbondingCompletionTime,
+		Commission:              a.Commission,
+		Power:                   a.Power,
 		// MinSelfDelegation:       v.MinSelfDelegation,
 		// Tokens:                  v.Tokens,
 	})
 }
 
 // UnmarshalJSON unmarshals the validator from JSON using Bech32
-func (v *Validator) UnmarshalJSON(data []byte) error {
+func (a *Authority) UnmarshalJSON(data []byte) error {
 	bv := &bechValidator{}
 	if err := codec.Cdc.UnmarshalJSON(data, bv); err != nil {
 		return err
@@ -172,35 +162,31 @@ func (v *Validator) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	*v = Validator{
+	*a = Authority{
 		OperatorAddress:         bv.OperatorAddress,
 		ConsPubKey:              consPubKey,
 		Jailed:                  bv.Jailed,
 		Status:                  bv.Status,
-		DelegatorShares:         bv.DelegatorShares,
 		Description:             bv.Description,
 		UnbondingHeight:         bv.UnbondingHeight,
 		UnbondingCompletionTime: bv.UnbondingCompletionTime,
 		Commission:              bv.Commission,
-		// Tokens:                  bv.Tokens,
-		// MinSelfDelegation:       bv.MinSelfDelegation,
 	}
 	return nil
 }
 
 // only the vitals
-func (v Validator) TestEquivalent(v2 Validator) bool {
-	return v.ConsPubKey.Equals(v2.ConsPubKey) &&
-		bytes.Equal(v.OperatorAddress, v2.OperatorAddress) &&
-		v.Status.Equal(v2.Status) &&
-		// v.Tokens.Equal(v2.Tokens) &&
-		v.DelegatorShares.Equal(v2.DelegatorShares) &&
-		v.Description == v2.Description &&
-		v.Commission.Equal(v2.Commission)
+func (a Authority) TestEquivalent(v2 Authority) bool {
+	return a.ConsPubKey.Equals(v2.ConsPubKey) &&
+		bytes.Equal(a.OperatorAddress, v2.OperatorAddress) &&
+		a.Status.Equal(v2.Status) &&
+		a.Power.Equal(v2.Power) &&
+		a.Description == v2.Description &&
+		a.Commission.Equal(v2.Commission)
 }
 
 // return the TM validator address
-func (v Validator) ConsAddress() sdk.ConsAddress {
+func (v Authority) ConsAddress() sdk.ConsAddress {
 	return sdk.ConsAddress(v.ConsPubKey.Address())
 }
 
@@ -269,7 +255,7 @@ func (d Description) EnsureLength() (Description, sdk.Error) {
 
 // ABCIValidatorUpdate returns an abci.ValidatorUpdate from a staking validator type
 // with the full validator power
-func (v Validator) ABCIValidatorUpdate() abci.ValidatorUpdate {
+func (v Authority) ABCIValidatorUpdate() abci.ValidatorUpdate {
 	return abci.ValidatorUpdate{
 		PubKey: tmtypes.TM2PB.PubKey(v.ConsPubKey),
 		Power:  v.TendermintPower(),
@@ -278,7 +264,7 @@ func (v Validator) ABCIValidatorUpdate() abci.ValidatorUpdate {
 
 // ABCIValidatorUpdateZero returns an abci.ValidatorUpdate from a staking validator type
 // with zero power used for validator updates.
-func (v Validator) ABCIValidatorUpdateZero() abci.ValidatorUpdate {
+func (v Authority) ABCIValidatorUpdateZero() abci.ValidatorUpdate {
 	return abci.ValidatorUpdate{
 		PubKey: tmtypes.TM2PB.PubKey(v.ConsPubKey),
 		Power:  0,
@@ -287,7 +273,7 @@ func (v Validator) ABCIValidatorUpdateZero() abci.ValidatorUpdate {
 
 // UpdateStatus updates the location of the shares within a validator
 // to reflect the new status
-func (v Validator) UpdateStatus(pool Pool, NewStatus sdk.BondStatus) (Validator, Pool) {
+func (v Authority) UpdateStatus(pool Pool, NewStatus sdk.BondStatus) (Authority, Pool) {
 
 	switch v.Status {
 	case sdk.Unbonded:
@@ -338,7 +324,7 @@ func (v Validator) UpdateStatus(pool Pool, NewStatus sdk.BondStatus) (Validator,
 
 // SetInitialCommission attempts to set a validator's initial commission. An
 // error is returned if the commission is invalid.
-func (v Validator) SetInitialCommission(commission Commission) (Validator, sdk.Error) {
+func (v Authority) SetInitialCommission(commission Commission) (Authority, sdk.Error) {
 	if err := commission.Validate(); err != nil {
 		return v, err
 	}
@@ -349,28 +335,16 @@ func (v Validator) SetInitialCommission(commission Commission) (Validator, sdk.E
 
 // AddTokensFromDel adds tokens to a validator
 // CONTRACT: Tokens are assumed to have come from not-bonded pool.
-func (v Validator) AddTokensFromDel(pool Pool, amount sdk.Int) (Validator, Pool, sdk.Dec) {
+func (v Authority) AddTokensFromDel(pool Pool, amount sdk.Int) (Authority, Pool, sdk.Dec) {
 
 	// calculate the shares to issue
 	var issuedShares sdk.Dec
-	if v.DelegatorShares.IsZero() {
-		// the first delegation to a validator sets the exchange rate to one
-		issuedShares = amount.ToDec()
-	} else {
-		shares, err := v.SharesFromTokens(amount)
-		if err != nil {
-			panic(err)
-		}
-
-		issuedShares = shares
-	}
 
 	if v.Status == sdk.Bonded {
 		pool = pool.notBondedTokensToBonded(amount)
 	}
 
 	v.Power = v.Power.Add(amount)
-	v.DelegatorShares = v.DelegatorShares.Add(issuedShares)
 
 	return v, pool, issuedShares
 }
@@ -407,39 +381,6 @@ func (v Validator) AddTokensFromDel(pool Pool, amount sdk.Int) (Validator, Pool,
 // 	return v, pool, issuedTokens
 // }
 
-// In some situations, the exchange rate becomes invalid, e.g. if
-// Validator loses all tokens due to slashing. In this case,
-// make all future delegations invalid.
-func (v Validator) InvalidExRate() bool {
-	return v.Power.IsZero() && v.DelegatorShares.IsPositive()
-}
-
-// calculate the token worth of provided shares
-func (v Validator) TokensFromShares(shares sdk.Dec) sdk.Dec {
-	return (shares.MulInt(v.Power)).Quo(v.DelegatorShares)
-}
-
-// calculate the token worth of provided shares, truncated
-func (v Validator) TokensFromSharesTruncated(shares sdk.Dec) sdk.Dec {
-	return (shares.MulInt(v.Power)).QuoTruncate(v.DelegatorShares)
-}
-
-// TokensFromSharesRoundUp returns the token worth of provided shares, rounded
-// up.
-func (v Validator) TokensFromSharesRoundUp(shares sdk.Dec) sdk.Dec {
-	return (shares.MulInt(v.Power)).QuoRoundUp(v.DelegatorShares)
-}
-
-// SharesFromTokens returns the shares of a delegation given a bond amount. It
-// returns an error if the validator has no tokens.
-func (v Validator) SharesFromTokens(amt sdk.Int) (sdk.Dec, sdk.Error) {
-	if v.Power.IsZero() {
-		return sdk.ZeroDec(), ErrInsufficientShares(DefaultCodespace)
-	}
-
-	return v.GetDelegatorShares().MulInt(amt).QuoInt(v.GetPower()), nil
-}
-
 // SharesFromTokensTruncated returns the truncated shares of a delegation given
 // a bond amount. It returns an error if the validator has no tokens.
 // func (v Validator) SharesFromTokensTruncated(amt sdk.Int) (sdk.Dec, sdk.Error) {
@@ -460,7 +401,7 @@ func (v Validator) SharesFromTokens(amt sdk.Int) (sdk.Dec, sdk.Error) {
 
 // get the Tendermint Power
 // a reduction of 10^6 from validator tokens is applied
-func (v Validator) TendermintPower() int64 {
+func (v Authority) TendermintPower() int64 {
 	if v.Status == sdk.Bonded {
 		return v.PotentialTendermintPower()
 	}
@@ -468,7 +409,7 @@ func (v Validator) TendermintPower() int64 {
 }
 
 // potential Tendermint power
-func (v Validator) PotentialTendermintPower() int64 {
+func (v Authority) PotentialTendermintPower() int64 {
 	return sdk.TokensToTendermintPower(v.Power)
 }
 
@@ -476,16 +417,15 @@ func (v Validator) PotentialTendermintPower() int64 {
 // var _ sdk.Validator = Validator{}
 
 // nolint - for sdk.Validator
-func (v Validator) IsJailed() bool               { return v.Jailed }
-func (v Validator) GetMoniker() string           { return v.Description.Moniker }
-func (v Validator) GetStatus() sdk.BondStatus    { return v.Status }
-func (v Validator) GetOperator() sdk.ValAddress  { return v.OperatorAddress }
-func (v Validator) GetConsPubKey() crypto.PubKey { return v.ConsPubKey }
-func (v Validator) GetConsAddr() sdk.ConsAddress { return sdk.ConsAddress(v.ConsPubKey.Address()) }
-func (v Validator) GetPower() sdk.Int            { return v.Power }
-func (v Validator) GetTendermintPower() int64    { return v.TendermintPower() }
-func (v Validator) GetCommission() sdk.Dec       { return v.Commission.Rate }
-func (v Validator) GetDelegatorShares() sdk.Dec  { return v.DelegatorShares }
+func (v Authority) IsJailed() bool               { return v.Jailed }
+func (v Authority) GetMoniker() string           { return v.Description.Moniker }
+func (v Authority) GetStatus() sdk.BondStatus    { return v.Status }
+func (v Authority) GetOperator() sdk.ValAddress  { return v.OperatorAddress }
+func (v Authority) GetConsPubKey() crypto.PubKey { return v.ConsPubKey }
+func (v Authority) GetConsAddr() sdk.ConsAddress { return sdk.ConsAddress(v.ConsPubKey.Address()) }
+func (v Authority) GetPower() sdk.Int            { return v.Power }
+func (v Authority) GetTendermintPower() int64    { return v.TendermintPower() }
+func (v Authority) GetCommission() sdk.Dec       { return v.Commission.Rate }
 
 // func (v Validator) GetBondedTokens() sdk.Int { return v.BondedTokens() }
 

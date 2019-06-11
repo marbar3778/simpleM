@@ -55,9 +55,9 @@ func AddressFromLastValidatorPowerKey(key []byte) []byte {
 // Power index is the key used in the power-store, and represents the relative
 // power ranking of the validator.
 // VALUE: validator operator address ([]byte)
-func GetValidatorsByPowerIndexKey(validator Validator) []byte {
+func GetValidatorsByPowerIndexKey(authority Authority) []byte {
 	// NOTE the address doesn't need to be stored because counter bytes must always be different
-	return getValidatorPowerRank(validator)
+	return getValidatorPowerRank(authority)
 }
 
 // get the bonded validator index key for an operator address
@@ -68,7 +68,7 @@ func GetLastValidatorPowerKey(operator sdk.ValAddress) []byte {
 // get the power ranking of a validator
 // NOTE the larger values are of higher value
 // nolint: unparam
-func getValidatorPowerRank(validator Validator) []byte {
+func getValidatorPowerRank(validator Authority) []byte {
 
 	potentialPower := validator.Power
 

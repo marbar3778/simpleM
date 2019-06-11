@@ -10,30 +10,9 @@ import (
 	"github.com/marbar3778/simpleM/x/simplePOA/types"
 )
 
-// InitGenesis sets the pool and parameters for the provided keeper.  For each
-// validator in data, it sets that validator in the keeper along with manually
-// setting the indexes. In addition, it also sets any delegations found in
-// data. Finally, it updates the bonded validators.
-// Returns final validator set after applying all declaration and delegations
 func InitGenesis(ctx sdk.Context, keeper Keeper, accountKeeper types.AccountKeeper, data types.GenesisState) (res []abci.ValidatorUpdate) {
 
-	// We need to pretend to be "n blocks before genesis", where "n" is the
-	// validator update delay, so that e.g. slashing periods are correctly
-	// initialized for the validator set e.g. with a one-block offset - the
-	// first TM block is at height 1, so state updates applied from
-	// genesis.json are in block 0.
 	ctx = ctx.WithBlockHeight(1 - sdk.ValidatorUpdateDelay)
-
-	// manually set the total supply for staking based on accounts if not provided
-	// if data.Pool.NotBondedTokens.IsZero() {
-	// 	accountKeeper.IterateAccounts(ctx,
-	// 		func(acc auth.Account) (stop bool) {
-	// 			data.Pool.NotBondedTokens = data.Pool.NotBondedTokens.
-	// 				Add(acc.GetCoins().AmountOf(data.Params.BondDenom)) TODO: POOl only goes to validators
-	// 			return false
-	// 		},
-	// 	)
-	// }
 
 	keeper.SetPool(ctx, data.Pool) // TODO remove pool from genesis data and always calculate?
 	keeper.SetParams(ctx, data.Params)
@@ -56,32 +35,6 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, accountKeeper types.AccountKeep
 			keeper.InsertValidatorQueue(ctx, validator)
 		}
 	}
-
-	// for _, delegation := range data.Delegations {
-	// 	// Call the before-creation hook if not exported
-	// 	if !data.Exported {
-	// 		keeper.BeforeDelegationCreated(ctx, delegation.DelegatorAddress, delegation.ValidatorAddress)
-	// 	}
-	// 	keeper.SetDelegation(ctx, delegation)
-	// 	// Call the after-modification hook if not exported
-	// 	if !data.Exported {
-	// 		keeper.AfterDelegationModified(ctx, delegation.DelegatorAddress, delegation.ValidatorAddress)
-	// 	}
-	// }
-
-	// for _, ubd := range data.UnbondingDelegations {
-	// 	keeper.SetUnbondingDelegation(ctx, ubd)
-	// 	for _, entry := range ubd.Entries {
-	// 		keeper.InsertUBDQueue(ctx, ubd, entry.CompletionTime)
-	// 	}
-	// }
-
-	// for _, red := range data.Redelegations {
-	// 	keeper.SetRedelegation(ctx, red)
-	// 	for _, entry := range red.Entries {
-	// 		keeper.InsertRedelegationQueue(ctx, red, entry.CompletionTime)
-	// 	}
-	// }
 
 	// don't need to run Tendermint updates if we exported
 	if data.Exported {
@@ -110,17 +63,6 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 	params := keeper.GetParams(ctx)
 	lastTotalPower := keeper.GetLastTotalPower(ctx)
 	validators := keeper.GetAllValidators(ctx)
-	// delegations := keeper.GetAllDelegations(ctx)
-	// var unbondingDelegations []types.UnbondingDelegation
-	// keeper.IterateUnbondingDelegations(ctx, func(_ int64, ubd types.UnbondingDelegation) (stop bool) {
-	// 	unbondingDelegations = append(unbondingDelegations, ubd)
-	// 	return false
-	// })
-	// var redelegations []types.Redelegation
-	// keeper.IterateRedelegations(ctx, func(_ int64, red types.Redelegation) (stop bool) {
-	// 	redelegations = append(redelegations, red)
-	// 	return false
-	// })
 	var lastValidatorPowers []types.LastValidatorPower
 	keeper.IterateLastValidatorPowers(ctx, func(addr sdk.ValAddress, power int64) (stop bool) {
 		lastValidatorPowers = append(lastValidatorPowers, types.LastValidatorPower{addr, power})

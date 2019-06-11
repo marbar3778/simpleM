@@ -35,51 +35,10 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) ([]abci.ValidatorUpdate, sdk.T
 	resTags := sdk.NewTags()
 
 	// Calculate validator set changes.
-	//
-	// NOTE: ApplyAndReturnValidatorSetUpdates has to come before
-	// UnbondAllMatureValidatorQueue.
-	// This fixes a bug when the unbonding period is instant (is the case in
-	// some of the tests). The test expected the validator to be completely
-	// unbonded after the Endblocker (go from Bonded -> Unbonding during
-	// ApplyAndReturnValidatorSetUpdates and then Unbonding -> Unbonded during
-	// UnbondAllMatureValidatorQueue).
 	validatorUpdates := k.ApplyAndReturnValidatorSetUpdates(ctx)
 
 	// Unbond all mature validators from the unbonding queue.
 	k.UnbondAllMatureValidatorQueue(ctx)
-
-	// Remove all mature unbonding delegations from the ubd queue.
-	// matureUnbonds := k.DequeueAllMatureUBDQueue(ctx, ctx.BlockHeader().Time)
-	// for _, dvPair := range matureUnbonds {
-	// 	err := k.CompleteUnbonding(ctx, dvPair.DelegatorAddress, dvPair.ValidatorAddress)
-	// 	if err != nil {
-	// 		continue
-	// 	}
-
-	// 	resTags = resTags.AppendTags(sdk.NewTags(
-	// 		tags.Action, tags.ActionCompleteUnbonding,
-	// 		tags.Delegator, dvPair.DelegatorAddress.String(),
-	// 		tags.SrcValidator, dvPair.ValidatorAddress.String(),
-	// 	))
-	// }
-
-	// Remove all mature redelegations from the red queue.
-	// matureRedelegations := k.DequeueAllMatureRedelegationQueue(ctx, ctx.BlockHeader().Time)
-	// for _, dvvTriplet := range matureRedelegations {
-	// 	err := k.CompleteRedelegation(ctx, dvvTriplet.DelegatorAddress,
-	// 		dvvTriplet.ValidatorSrcAddress, dvvTriplet.ValidatorDstAddress)
-	// 	if err != nil {
-	// 		continue
-	// 	}
-
-	// 	resTags = resTags.AppendTags(sdk.NewTags(
-	// 		tags.Action, tags.ActionCompleteRedelegation,
-	// 		tags.Category, tags.TxCategory,
-	// 		tags.Delegator, dvvTriplet.DelegatorAddress.String(),
-	// 		tags.SrcValidator, dvvTriplet.ValidatorSrcAddress.String(),
-	// 		tags.DstValidator, dvvTriplet.ValidatorDstAddress.String(),
-	// 	))
-	// }
 
 	return validatorUpdates, resTags
 }
@@ -115,14 +74,6 @@ func handleMsgCreateValidator(ctx sdk.Context, msg types.MsgCreateValidator, k k
 	}
 
 	validator := NewValidator(msg.ValidatorAddress, msg.PubKey, msg.Description)
-	commission := NewCommissionWithTime(
-		msg.Commission.Rate, msg.Commission.MaxRate,
-		msg.Commission.MaxChangeRate, ctx.BlockHeader().Time,
-	)
-	validator, err := validator.SetInitialCommission(commission)
-	if err != nil {
-		return err.Result()
-	}
 
 	// validator.MinSelfDelegation = msg.MinSelfDelegation // need to remove msgSelfdelegation
 

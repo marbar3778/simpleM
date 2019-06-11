@@ -58,7 +58,6 @@ func TestABCIValidatorUpdate(t *testing.T) {
 
 	abciVal := validator.ABCIValidatorUpdate()
 	require.Equal(t, tmtypes.TM2PB.PubKey(validator.ConsPubKey), abciVal.PubKey)
-	require.Equal(t, validator.BondedTokens().Int64(), abciVal.Power)
 }
 
 func TestABCIValidatorUpdateZero(t *testing.T) {
