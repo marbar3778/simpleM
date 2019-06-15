@@ -1,6 +1,8 @@
 package taskstreamer
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 
@@ -27,7 +29,7 @@ func NewKeeper(coinKeeper bank.Keeper, taskStore sdk.StoreKey, cdc *codec.Codec)
 func (k Keeper) GetTask(ctx sdk.Context, taskTitle string) ttype.Task {
 	store := ctx.KVStore(k.taskStore)
 	if !store.Has([]byte(taskTitle)) {
-		panic("Naa")
+		panic(fmt.Sprintf("There is no task with the given title: %s", taskTitle))
 	}
 	task := store.Get([]byte(taskTitle))
 	var taskDetails ttype.Task
