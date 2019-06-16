@@ -1,8 +1,6 @@
 package daico
 
 import (
-
-	"github.com/rs/xid"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -11,7 +9,7 @@ import (
 type Keeper struct {
 	proposalStoreKey    sdk.StoreKey
 	participantStoreKey sdk.StoreKey
-	poolStorKey sdk.StoreKey
+	poolStorKey         sdk.StoreKey
 	transientStoreKey   sdk.StoreKey
 	paramsKeeper        params.Keeper
 	paramsCodeSpace     params.Subspace
@@ -22,7 +20,7 @@ func NewKeeper(sKey, tKey, bKey, pkey sdk.StoreKey, pKeeper params.Keeper, pCode
 	return Keeper{
 		proposalStoreKey:    sKey,
 		participantStoreKey: bKey,
-		poolStorKey: pkey,
+		poolStorKey:         pkey,
 		transientStoreKey:   tKey,
 		paramsKeeper:        pKeeper,
 		paramsCodeSpace:     pCodeSpace,
@@ -37,15 +35,15 @@ var (
 // Proposals
 
 // Get Proposal
-func (k Keeper) GetProposal(ctx sdk.Context, id string) (Proposal, error ) {
+func (k Keeper) GetProposal(ctx sdk.Context, id string) (p Proposal, ok bool) {
 	store := ctx.KVStore(k.proposalStoreKey)
 	i := store.Get([]byte(id))
 	if i == nil {
-		panic("Error")
+		return Proposal{}, false
 	}
 	var pa Proposal
 	k.cdc.MustUnmarshalBinaryBare(i, &pa)
-	return pa, nil
+	return pa, true
 }
 
 // Add a proposal to the store
@@ -69,7 +67,7 @@ func (k Keeper) RemoveProposal(ctx sdk.Context, id string) {
 
 // Get participant
 
-func (k Keeper) GetParticipant(ctx sdk.Context, id string )(pa Participant, ok bool) {
+func (k Keeper) GetParticipant(ctx sdk.Context, id string) (pa Participant, ok bool) {
 	store := ctx.KVStore(k.participantStoreKey)
 	i := store.Get([]byte(id))
 	if i == nil {
@@ -96,47 +94,68 @@ func (k Keeper) GetParticipant(ctx sdk.Context, id string )(pa Participant, ok b
 
 // // Get Participant
 // func (k Keeper) GetParticipants(ctx sdk.Context) (participants Participants ) {
-// 	k.IterateParticipants(ctx, 
+// 	k.IterateParticipants(ctx,
 // 	func (pa Participants)(stop bool) {
 // 		participants = append(participants, pa)
 // 		return false
 // 	})
-// 	return 
+// 	return
 // }
 
 // Set Participants
-func (k Keeper) SetParticipant(ctx sdk.Context, pa Participant){
+func (k Keeper) SetParticipant(ctx sdk.Context, pa Participant) {
 	store := ctx.KVStore(k.participantStoreKey)
 	store.Set([]byte(pa.GetID()), k.cdc.MustMarshalBinaryBare(pa))
 }
 
+// New backer
+func (k Keeper) NewParticipant(ctx sdk.Context, pa Participant) Participant {
+	participant := NewParticipant(pa.UserName, []ProposalReference, pa.UserAddress)
 
-// Become a backer
-func (k Keeper) BecomeParticipant(ctx sdk.Context, value sdk.Coins, participantName string, participantAddr sdk.AccAddress, proposalID string) {
-	pro, err := k.GetProposal(ctx, proposalID)
-	if err != nil {
-		panic("Proposal doesnt exist")
-	}
-	
-	guid := xid.New().String()
-	participant := NewParticipant(guid, participantName, []string{pro.GetID()}, participantAddr, value)
 	k.SetParticipant(ctx, participant)
-
-	// need to add value to the pool that 
-
-	pro.Participants = append(pro.Participants, participant.GetAddress())
-	// increment value in pool
-	k.SetProposal(ctx, pro)
+	return participant
 }
 
-// Send funds
+// Become a backer to a proposal
+func (k Keeper) BecomeParticipant(ctx sdk.Context, pa Participant, proposalID string) {
+	p, ok := k.GetParticipant(ctx, pa.GetID())
+	if !ok {
+		p = k.NewParticipant(ctx, pa)
+		k.SetParticipant(ctx, p)
+	}
 
-func (k Keeper) GetFeePool(ctx sdk.Context, ID string)  (pool Pool) {
+	proposal, ok := k.GetProposal(ctx, proposalID)
+	if !ok {
+		panic("Proposal does not exist")
+	}
+
+	proposal.Participants = append(proposal.Participants, p.GetAddress())
+	// increment value in pool
+	k.SetProposal(ctx, proposal)
+
+}
+
+// Get Pool
+func (k Keeper) GetPool(ctx sdk.Context, ID string) (pool Pool) {
 	store := ctx.KVStore(k.poolStorKey)
 	i := store.Get([]byte(ID))
 	if i == nil {
 		panic("Pool does not exist")
 	}
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(i, &pool)
-	return 
+	return
+}
+
+// set the pool with the funds
+func (k Keeper) SetPool(ctx sdk.Context, pool Pool) {
+	store := ctx.KVStore(k.poolStorKey)
+	b := k.cdc.MustMarshalBinaryLengthPrefixed(pool)
+	store.Set([]byte(pool.GetID()), b)
+}
+
+// Destroy Pool
+func (k Keeper) DestroyPool(ctx sdk.Context, pool Pool) {
+	// iterate through all the participants in the proposal
+	// allocated / raised,
+	// percentage of pa funds given is returned in respect to what was not allocated.
 }

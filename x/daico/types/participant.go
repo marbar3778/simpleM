@@ -2,27 +2,31 @@ package types
 
 import (
 	"fmt"
+
 	"github.com/rs/xid"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-type Participant struct {
-	Id                 string         `json:"id"`
-	UserName           string         `json:"username"`
-	UserAddress        sdk.AccAddress `json:"user_address"`
-	AmountParticipated sdk.Coins      `json:"amount_participated"` // coins represent vote power
-	ProposalReference  []string       `json:"proposalReference"`
+type ProposalReference struct {
+	Reference string    `json:"reference"`
+	Amount    sdk.Coins `json:"amount"` // This is the amount the Partiicpant added into the pool
 }
 
-func NewParticipant(userName string, pRef []string, userAddress sdk.AccAddress, amountParticipated sdk.Coins) Participant {
+type Participant struct {
+	Id                string              `json:"id"`
+	UserName          string              `json:"username"`
+	UserAddress       sdk.AccAddress      `json:"user_address"`
+	ProposalReference []ProposalReference `json:"proposalReference"`
+}
+
+func NewParticipant(userName string, pRef []ProposalReference, userAddress sdk.AccAddress, amountParticipated sdk.Coins) Participant {
 	guid := xid.New().String()
 	return Participant{
-		Id:                 guid,
-		UserName:           userName,
-		UserAddress:        userAddress,
-		AmountParticipated: amountParticipated,
-		ProposalReference:  pRef,
+		Id:                guid,
+		UserName:          userName,
+		UserAddress:       userAddress,
+		ProposalReference: pRef,
 	}
 }
 
@@ -32,9 +36,8 @@ func (p Participant) String() string {
 	id: %s,
 	userName: %s,
 	userAddress: %s,
-	amountParticipated: %s`, p.Id, p.UserName,
-		p.UserAddress.String(),
-		p.AmountParticipated.String())
+	`, p.Id, p.UserName,
+		p.UserAddress.String())
 
 	return strings
 }

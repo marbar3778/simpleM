@@ -32,3 +32,5 @@ func (p Pool) String() string {
 	`, p.ID, p.Denom, p.AllocatedFunds.String(), p.RaisedFunds.String())
 	return strings
 }
+
+func (p Pool) GetID() string {return p.ID}

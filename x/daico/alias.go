@@ -17,8 +17,9 @@ var (
 )
 
 type (
-	Participant  = types.Participant
-	Participants = types.Participants
-	Proposal     = types.Proposal
-	Pool = types.Pool
+	Participant       = types.Participant
+	Participants      = types.Participants
+	Proposal          = types.Proposal
+	Pool              = types.Pool
+	ProposalReference = types.ProposalReference
 )
