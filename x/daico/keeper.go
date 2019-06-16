@@ -52,8 +52,11 @@ func (k Keeper) SetProposal(ctx sdk.Context, pr Proposal) {
 	store.Set([]byte(pr.ID), k.cdc.MustMarshalBinaryBare(pr))
 }
 
-func (k Keeper) CreateProposal(ctx sdk.Context, pr Proposal) {
-
+func (k Keeper) CreateProposal(ctx sdk.Context, description, companyName string,
+	proposerAddress sdk.AccAddress, tokenDenom string, tokenAmount int) Proposal {
+	pro := NewProposal(description, companyName, proposerAddress, tokenDenom, tokenAmount)
+	k.SetProposal(ctx, pro)
+	return pro
 }
 
 // Remove the proposal form the store
@@ -110,21 +113,23 @@ func (k Keeper) SetParticipant(ctx sdk.Context, pa Participant) {
 
 // New backer
 func (k Keeper) NewParticipant(ctx sdk.Context, pa Participant) Participant {
-	participant := NewParticipant(pa.UserName, []ProposalReference, pa.UserAddress)
+	participant := NewParticipant(pa.UserName, []ProposalReference{}, pa.UserAddress)
 
 	k.SetParticipant(ctx, participant)
 	return participant
 }
 
-// Become a backer to a proposal
-func (k Keeper) BecomeParticipant(ctx sdk.Context, pa Participant, proposalID string) {
-	p, ok := k.GetParticipant(ctx, pa.GetID())
-	if !ok {
-		p = k.NewParticipant(ctx, pa)
-		k.SetParticipant(ctx, p)
-	}
+// Become a backer to a proposal TODO: Fix me
+func (k Keeper) BecomeParticipant(ctx sdk.Context, userName string, userAddress sdk.AccAddress,
+	pRef ProposalReference, participationAmount sdk.Coins) {
+	// Iterate through the participants, see if it exists, if not create new one
+	// p, ok := k.GetParticipant(ctx, pa.GetID())
+	// if !ok {
+	// 	p = k.NewParticipant(ctx, pa)
+	// 	k.SetParticipant(ctx, p)
+	// }
 
-	proposal, ok := k.GetProposal(ctx, proposalID)
+	proposal, ok := k.GetProposal(ctx, pRef.Reference)
 	if !ok {
 		panic("Proposal does not exist")
 	}

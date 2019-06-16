@@ -20,7 +20,7 @@ type Participant struct {
 	ProposalReference []ProposalReference `json:"proposalReference"`
 }
 
-func NewParticipant(userName string, pRef []ProposalReference, userAddress sdk.AccAddress, amountParticipated sdk.Coins) Participant {
+func NewParticipant(userName string, pRef []ProposalReference, userAddress sdk.AccAddress) Participant {
 	guid := xid.New().String()
 	return Participant{
 		Id:                guid,

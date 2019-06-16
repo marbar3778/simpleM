@@ -2,31 +2,38 @@ package types
 
 import (
 	"fmt"
+
 	"github.com/rs/xid"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type Proposal struct {
-	ID                     string           `json:"id"`
-	Description            string           `json:"description"`
-	CompanyName            string           `json:"company_name"`
-	FundsUsed              string           `json:"funds_used"`
-	ProposerAddress        sdk.AccAddress   `json:"proposerAddress"`
-	Participants           []sdk.AccAddress `json:"partiicpants"`
-	PoolReference          string           `json:"pool_reference"`
+	ID              string           `json:"id"`
+	Description     string           `json:"description"`
+	CompanyName     string           `json:"company_name"`
+	ProposerAddress sdk.AccAddress   `json:"proposerAddress"`
+	Participants    []sdk.AccAddress `json:"participants"`
+	PoolReference   string           `json:"pool_reference"`
+	TokenDenom      string           `json:"token_denom"`
+	TokenAmount     int              `json:"token_amount"`
+	Coins           sdk.Coins        `json:"coins"`
 }
 
-func NewProposal(description, companyName, fundsUsed string, proposerAddress sdk.AccAddress, pariticpants []sdk.AccAddress) Proposal {
+func NewProposal(description, companyName string, proposerAddress sdk.AccAddress, tokenDenom string, tokenAmount int) Proposal {
 	guid := xid.New().String()
+
+	coins := sdk.NewCoins(sdk.NewCoin(tokenDenom, sdk.NewInt(int64(tokenAmount))))
 	return Proposal{
-		ID: guid,
-		Description:            description,
-		CompanyName:            companyName,
-		FundsUsed:              fundsUsed,
-		ProposerAddress:        proposerAddress,
-		Participants:           pariticpants,
-		PoolReference:          "",
+		ID:              guid,
+		Description:     description,
+		CompanyName:     companyName,
+		ProposerAddress: proposerAddress,
+		Participants:    []sdk.AccAddress{},
+		PoolReference:   "",
+		TokenDenom:      tokenDenom,
+		TokenAmount:     tokenAmount,
+		Coins:           coins,
 	}
 }
 
@@ -37,10 +44,9 @@ func (p Proposal) String() string {
 	strings := fmt.Sprintf(`
 	Descriptoion: %s,
 	Company Name: %s,
-	Funds Used: %s,
 	Proposer Address: %s,
 	Pariticpants: %v,
-	`, p.Description, p.CompanyName, p.FundsUsed, p.ProposerAddress.String(), len(p.Participants))
+	`, p.Description, p.CompanyName, p.ProposerAddress.String(), len(p.Participants))
 
 	return strings
 }
